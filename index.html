@@ -13,7 +13,6 @@
     <title>Curriculo Pro | Criador de curriculos online</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -229,9 +228,9 @@
           <fieldset class="form-page finish-page" data-page-panel="finish">
             <legend>Conclusao</legend>
             <div class="finish-box full">
-              <p>Seu curriculo aparece ao lado. Revise a aparência e continue para entrar ou criar sua conta.</p>
+              <p>Seu curriculo aparece ao lado. Revise a aparência e escolha como deseja receber o arquivo.</p>
               <div class="finish-actions">
-                <button class="primary-button" id="finishLoginBtn" type="button">Continuar</button>
+                <button class="primary-button" id="finishDeliveryBtn" type="button">Continuar</button>
               </div>
             </div>
           </fieldset>
@@ -309,42 +308,18 @@
       </aside>
     </main>
 
-    <div class="auth-overlay" id="authOverlay" hidden>
-      <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-        <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Fechar">×</button>
-        <p class="eyebrow">Acesso</p>
-        <div id="authStep">
-          <h2 id="authModalTitle">Entre para liberar seu curriculo</h2>
-          <p class="auth-copy">Faça login ou crie uma conta para escolher como deseja receber o arquivo.</p>
-          <div class="auth-social">
-            <button class="social-button google" id="googleAuthBtn" type="button">Continuar com Google</button>
-            <button class="social-button facebook" id="facebookAuthBtn" type="button">Continuar com Facebook</button>
-          </div>
-          <div class="auth-divider"><span>ou</span></div>
-          <div class="auth-grid">
-            <label>
-              E-mail
-              <input id="modalAuthEmail" type="email" placeholder="voce@email.com" autocomplete="email">
-            </label>
-            <label>
-              Senha
-              <input id="modalAuthPassword" type="password" placeholder="Senha" autocomplete="current-password">
-            </label>
-          </div>
-          <div class="auth-actions">
-            <button class="ghost-button" id="modalSignInBtn" type="button">Entrar</button>
-            <button class="primary-button" id="modalSignUpBtn" type="button">Criar conta</button>
-          </div>
-          <p class="auth-status" id="authModalState">Entre ou crie sua conta para seguir.</p>
-        </div>
-        <div class="delivery-step" id="deliveryStep" hidden>
-          <h2>Como deseja receber?</h2>
-          <p class="auth-copy">Sua conta está conectada. Escolha uma opção para continuar.</p>
+    <div class="delivery-overlay" id="deliveryOverlay" hidden>
+      <div class="delivery-modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
+        <button class="modal-close" id="closeDeliveryModalBtn" type="button" aria-label="Fechar">×</button>
+        <p class="eyebrow">Curriculo pronto</p>
+        <div class="delivery-step">
+          <h2 id="deliveryModalTitle">Como deseja receber?</h2>
+          <p class="delivery-copy">Escolha uma opção para continuar.</p>
           <div class="delivery-actions">
             <button class="primary-button" id="modalDownloadBtn" type="button">Baixar PDF</button>
             <button class="ghost-button" id="modalEmailBtn" type="button">Enviar para o e-mail</button>
           </div>
-          <p class="auth-status" id="deliveryState"></p>
+          <p class="delivery-status" id="deliveryState"></p>
         </div>
       </div>
     </div>

@@ -112,82 +112,6 @@ h1 {
   justify-content: flex-end;
 }
 
-.cloud-panel {
-  display: grid;
-  gap: 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fbfcfd;
-  padding: 16px;
-  margin-bottom: 18px;
-}
-
-.cloud-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.cloud-head h2 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-#cloudUser {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-#cloudState {
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.cloud-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.cloud-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.cloud-actions button {
-  min-height: 38px;
-}
-
-.cloud-settings {
-  display: grid;
-  gap: 12px;
-}
-
-#cloudToggleBtn {
-  justify-self: start;
-}
-
-.cloud-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.cloud-note a {
-  color: var(--accent-dark);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.cloud-note a:hover {
-  text-decoration: underline;
-}
-
 .primary-button,
 .ghost-button,
 .template-option,
@@ -1164,7 +1088,7 @@ body.status-dirty #saveStatus::before {
   background: #c78f34;
 }
 
-.auth-overlay {
+.delivery-overlay {
   position: fixed;
   inset: 0;
   display: grid;
@@ -1175,7 +1099,7 @@ body.status-dirty #saveStatus::before {
   z-index: 50;
 }
 
-.auth-modal {
+.delivery-modal {
   position: relative;
   width: min(100%, 560px);
   max-height: calc(100vh - 36px);
@@ -1199,95 +1123,18 @@ body.status-dirty #saveStatus::before {
   font-size: 1.1rem;
 }
 
-.auth-modal h2 {
+.delivery-modal h2 {
   margin: 0 0 8px;
   font-size: 1.4rem;
 }
 
-.auth-copy {
+.delivery-copy {
   margin: 0 0 18px;
   color: var(--muted);
   line-height: 1.5;
 }
 
-.auth-social {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.social-button {
-  min-height: 44px;
-  border-radius: 8px;
-  padding: 0 16px;
-  color: #fff;
-  font-weight: 700;
-}
-
-.social-button.google {
-  background: #1f6fff;
-}
-
-.social-button.facebook {
-  background: #3551c8;
-}
-
-.social-button:hover {
-  filter: brightness(0.96);
-}
-
-.auth-divider {
-  position: relative;
-  display: grid;
-  place-items: center;
-  margin: 16px 0;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.auth-divider::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 50%;
-  height: 1px;
-  background: var(--line);
-}
-
-.auth-divider span {
-  position: relative;
-  z-index: 1;
-  background: #fff;
-  padding: 0 10px;
-}
-
-.auth-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.auth-grid label {
-  display: grid;
-  gap: 7px;
-  color: #344054;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-
-.auth-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.auth-actions .primary-button,
-.auth-actions .ghost-button {
-  min-height: 42px;
-}
-
-.auth-status {
+.delivery-status {
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 0.92rem;

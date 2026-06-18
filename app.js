@@ -1,7 +1,6 @@
 const form = document.querySelector("#resumeForm");
 const preview = document.querySelector("#resumePreview");
 const printBtn = document.querySelector("#printBtn");
-const finishPrintBtn = document.querySelector("#finishPrintBtn");
 const clearBtn = document.querySelector("#clearBtn");
 const templateButtons = document.querySelectorAll(".template-option");
 const styleButtons = document.querySelectorAll(".style-option");
@@ -24,27 +23,14 @@ const currentStepTitle = document.querySelector("#currentStepTitle");
 const stepCounter = document.querySelector("#stepCounter");
 const progressBar = document.querySelector("#progressBar");
 const saveStatus = document.querySelector("#saveStatus");
-const authOverlay = document.querySelector("#authOverlay");
-const authStep = document.querySelector("#authStep");
-const deliveryStep = document.querySelector("#deliveryStep");
-const closeAuthModalBtn = document.querySelector("#closeAuthModalBtn");
-const googleAuthBtn = document.querySelector("#googleAuthBtn");
-const facebookAuthBtn = document.querySelector("#facebookAuthBtn");
-const modalAuthEmail = document.querySelector("#modalAuthEmail");
-const modalAuthPassword = document.querySelector("#modalAuthPassword");
-const modalSignInBtn = document.querySelector("#modalSignInBtn");
-const modalSignUpBtn = document.querySelector("#modalSignUpBtn");
+const deliveryOverlay = document.querySelector("#deliveryOverlay");
+const closeDeliveryModalBtn = document.querySelector("#closeDeliveryModalBtn");
 const modalDownloadBtn = document.querySelector("#modalDownloadBtn");
 const modalEmailBtn = document.querySelector("#modalEmailBtn");
-const authModalState = document.querySelector("#authModalState");
 const deliveryState = document.querySelector("#deliveryState");
 const prevPageBtn = document.querySelector("#prevPageBtn");
 const nextPageBtn = document.querySelector("#nextPageBtn");
-const finishLoginBtn = document.querySelector("#finishLoginBtn");
-const storageKey = "curriculo-pro-data";
-const cloudConfigKey = "curriculo-pro-cloud";
-const supabaseUrl = "https://gzgsjodcbraglevopvjk.supabase.co";
-const supabasePublicKey = "sb_publishable_RdwtaCaqPsrmLCnxgiV6Dw_-mSksim5";
+const finishDeliveryBtn = document.querySelector("#finishDeliveryBtn");
 const templates = ["classic", "modern", "compact", "executive", "portrait", "sidebar"];
 const photoTemplates = ["portrait", "sidebar"];
 
@@ -60,17 +46,7 @@ const pageNames = {
 
 let currentPage = "personal";
 let photoData = "";
-let cloudClient = null;
-let cloudSession = null;
-let cloudUser = null;
-let cloudAuthListenerAttached = false;
-const pendingPdfKey = "curriculo-pro-pending-pdf";
 const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
-function isOauthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  return params.has("code") || params.has("error") || params.has("access_token") || params.has("id_token");
-}
 
 const defaults = {
   name: "Seu Nome",
@@ -700,8 +676,7 @@ function renderSuggestions(data) {
 
 function saveAndRender() {
   const data = getFormData();
-  localStorage.setItem(storageKey, JSON.stringify(data));
-  setSaveStatus("Alteracoes salvas", false);
+  setSaveStatus("Alteracoes desta sessao", false);
   render(data);
 }
 
@@ -711,190 +686,15 @@ function setSaveStatus(text, dirty) {
   document.body.classList.toggle("status-dirty", Boolean(dirty));
 }
 
-function setCloudState(text) {
-  if (authModalState) authModalState.textContent = text;
+function openDeliveryModal() {
+  if (!deliveryOverlay) return;
+  deliveryState.textContent = "";
+  deliveryOverlay.hidden = false;
 }
 
-function setCloudUserLabel(text) {
-  return text;
-}
-
-function setAuthModalState(text) {
-  if (authModalState) authModalState.textContent = text;
-}
-
-function openAuthModal() {
-  if (!authOverlay) return;
-  authOverlay.hidden = false;
-  if (cloudReady()) {
-    showDeliveryOptions();
-    return;
-  }
-  authStep.hidden = false;
-  deliveryStep.hidden = true;
-  setAuthModalState(cloudClient ? "Entre ou crie sua conta para seguir." : "A autenticação ainda não foi configurada.");
-  modalAuthPassword.value = "";
-  modalAuthEmail.focus();
-}
-
-function showDeliveryOptions() {
-  authStep.hidden = true;
-  deliveryStep.hidden = false;
-  deliveryState.textContent = cloudUser?.email ? `Conta: ${cloudUser.email}` : "";
-}
-
-function closeAuthModal() {
-  if (!authOverlay) return;
-  authOverlay.hidden = true;
-}
-
-function getCloudConfig() {
-  try {
-    return JSON.parse(localStorage.getItem(cloudConfigKey) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function saveCloudConfig(config) {
-  localStorage.setItem(cloudConfigKey, JSON.stringify(config));
-}
-
-function initCloudClient() {
-  const savedConfig = getCloudConfig();
-  const config = {
-    url: supabaseUrl,
-    key: supabasePublicKey || savedConfig.key
-  };
-  if (!config.key || !window.supabase?.createClient) {
-    cloudClient = null;
-    cloudSession = null;
-    cloudUser = null;
-    cloudAuthListenerAttached = false;
-    setCloudState("Offline");
-    setCloudUserLabel("Nenhuma conta conectada");
-    return;
-  }
-
-  cloudClient = window.supabase.createClient(config.url, config.key);
-  cloudAuthListenerAttached = false;
-  setCloudState(cloudSession ? `Online: ${cloudUser?.email || "logado"}` : "Conectado");
-  setCloudUserLabel(cloudSession?.user?.email ? `Conta: ${cloudSession.user.email}` : "Nenhuma conta conectada");
-
-  cloudClient.auth.getSession().then(({ data }) => {
-    cloudSession = data.session || null;
-    cloudUser = cloudSession?.user || null;
-    setCloudState(cloudSession ? `Online: ${cloudUser?.email || "logado"}` : "Conectado");
-    setCloudUserLabel(cloudUser?.email ? `Conta: ${cloudUser.email}` : "Nenhuma conta conectada");
-    resumePendingPdfIfReady();
-  });
-
-  if (!cloudAuthListenerAttached) {
-    cloudClient.auth.onAuthStateChange((_event, session) => {
-      cloudSession = session;
-      cloudUser = session?.user || null;
-      setCloudState(cloudSession ? `Online: ${cloudUser?.email || "logado"}` : "Conectado");
-      setCloudUserLabel(cloudUser?.email ? `Conta: ${cloudUser.email}` : "Nenhuma conta conectada");
-      resumePendingPdfIfReady();
-    });
-    cloudAuthListenerAttached = true;
-  }
-}
-
-function cloudReady() {
-  return Boolean(cloudClient && cloudSession?.user?.id);
-}
-
-function resumePendingPdfIfReady() {
-  const pending = sessionStorage.getItem(pendingPdfKey) === "choose-delivery";
-  if (!pending || !cloudReady() || !cloudSession) return false;
-  sessionStorage.removeItem(pendingPdfKey);
-  authOverlay.hidden = false;
-  showDeliveryOptions();
-  return true;
-}
-
-async function signInWithPassword(email, password) {
-  if (!cloudClient) {
-    setAuthModalState("A autenticação ainda não foi configurada.");
-    return false;
-  }
-  if (!email || !password) {
-    setAuthModalState("Informe seu e-mail e sua senha.");
-    return false;
-  }
-
-  const result = await cloudClient.auth.signInWithPassword({ email, password });
-  if (result.error) {
-    setCloudState(`Erro no login: ${result.error.message}`);
-    setAuthModalState(`Erro no login: ${result.error.message}`);
-    return false;
-  }
-
-  saveCloudConfig({ ...getCloudConfig(), email });
-  setCloudState("Login realizado");
-  setAuthModalState("Login realizado");
-  cloudSession = result.data.session || cloudSession;
-  cloudUser = result.data.user || cloudSession?.user || cloudUser;
-  showDeliveryOptions();
-  return true;
-}
-
-async function signUpWithPassword(email, password) {
-  if (!cloudClient) {
-    setAuthModalState("A autenticação ainda não foi configurada.");
-    return false;
-  }
-  if (!email || !password) {
-    setAuthModalState("Informe seu e-mail e crie uma senha.");
-    return false;
-  }
-
-  const result = await cloudClient.auth.signUp({ email, password });
-  if (result.error) {
-    setCloudState(`Erro ao criar conta: ${result.error.message}`);
-    setAuthModalState(`Erro ao criar conta: ${result.error.message}`);
-    return false;
-  }
-
-  saveCloudConfig({ ...getCloudConfig(), email });
-  setCloudState("Conta criada");
-  cloudSession = result.data.session || cloudSession;
-  cloudUser = result.data.user || cloudSession?.user || cloudUser;
-  if (cloudSession) {
-    showDeliveryOptions();
-  } else {
-    setAuthModalState("Conta criada. Confirme o e-mail e depois faça login.");
-  }
-  return true;
-}
-
-async function signInWithProvider(provider) {
-  if (!cloudClient) {
-    setAuthModalState("A autenticação ainda não foi configurada.");
-    return false;
-  }
-
-  const redirectTo = `${window.location.origin}${window.location.pathname}`;
-  const result = await cloudClient.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo }
-  });
-
-  if (result.error) {
-    setCloudState(`Erro no ${provider}: ${result.error.message}`);
-    setAuthModalState(`Erro no ${provider}: ${result.error.message}`);
-    return false;
-  }
-
-  sessionStorage.setItem(pendingPdfKey, "choose-delivery");
-  setAuthModalState(`Abrindo ${provider}...`);
-  return true;
-}
-
-async function handlePdfAccess() {
-  sessionStorage.setItem(pendingPdfKey, "choose-delivery");
-  openAuthModal();
+function closeDeliveryModal() {
+  if (!deliveryOverlay) return;
+  deliveryOverlay.hidden = true;
 }
 
 function getResumeFileName() {
@@ -908,9 +708,9 @@ function getResumeFileName() {
 }
 
 function sendResumeByEmail() {
-  const recipient = (cloudUser?.email || modalAuthEmail.value || "").trim();
+  const recipient = fieldValue("email").trim();
   if (!recipient) {
-    setAuthModalState("Informe um e-mail para receber o material.");
+    deliveryState.textContent = "Informe um e-mail nos dados pessoais.";
     return;
   }
 
@@ -942,7 +742,6 @@ function hydrateForm(data) {
   currentPage = pages.includes(data.page) ? data.page : "personal";
   updatePageUi();
   render(getFormData());
-  localStorage.setItem(storageKey, JSON.stringify(getFormData()));
 }
 
 function parseLegacyExperience(text) {
@@ -995,9 +794,8 @@ function normalizeEducationItems(items) {
   }));
 }
 
-function loadSavedData() {
-  const saved = localStorage.getItem(storageKey);
-  const data = saved ? { ...defaults, ...JSON.parse(saved) } : {
+function loadInitialData() {
+  const data = {
     template: defaults.template,
     style: defaults.style,
     page: defaults.page,
@@ -1007,19 +805,15 @@ function loadSavedData() {
 
   ["name", "role", "phone", "email", "location", "link", "summary", "skills"].forEach((key) => {
     const field = form.elements[key];
-    if (field) field.value = data[key] === defaults[key] ? "" : data[key] || "";
+    if (field) field.value = "";
   });
 
   hydrateForm(data);
   setSaveStatus("Pronto para editar", false);
 }
 
-if (authOverlay) {
-  authOverlay.hidden = true;
-}
-
-if (!isOauthCallback()) {
-  sessionStorage.removeItem(pendingPdfKey);
+if (deliveryOverlay) {
+  deliveryOverlay.hidden = true;
 }
 
 form.addEventListener("input", saveAndRender);
@@ -1136,7 +930,7 @@ function printResume() {
   currentPage = "finish";
   updatePageUi();
   saveAndRender();
-  handlePdfAccess().catch(() => {});
+  openDeliveryModal();
 }
 
 printBtn.addEventListener("click", () => {
@@ -1144,51 +938,26 @@ printBtn.addEventListener("click", () => {
   updatePageUi();
   saveAndRender();
 });
-if (finishPrintBtn) {
-  finishPrintBtn.addEventListener("click", () => {
-    currentPage = "finish";
-    updatePageUi();
-    saveAndRender();
-    handlePdfAccess().catch(() => {});
-  });
-}
-
-finishLoginBtn.addEventListener("click", () => {
+finishDeliveryBtn.addEventListener("click", () => {
   currentPage = "finish";
   updatePageUi();
   saveAndRender();
-  handlePdfAccess().catch(() => {});
+  openDeliveryModal();
 });
 
-closeAuthModalBtn.addEventListener("click", closeAuthModal);
-authOverlay.addEventListener("click", (event) => {
-  if (event.target === authOverlay) closeAuthModal();
+closeDeliveryModalBtn.addEventListener("click", closeDeliveryModal);
+deliveryOverlay.addEventListener("click", (event) => {
+  if (event.target === deliveryOverlay) closeDeliveryModal();
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && authOverlay && !authOverlay.hidden) {
-    closeAuthModal();
+  if (event.key === "Escape" && deliveryOverlay && !deliveryOverlay.hidden) {
+    closeDeliveryModal();
   }
 });
 
-googleAuthBtn.addEventListener("click", () => {
-  signInWithProvider("google").catch(() => {});
-});
-
-facebookAuthBtn.addEventListener("click", () => {
-  signInWithProvider("facebook").catch(() => {});
-});
-
-modalSignInBtn.addEventListener("click", () => {
-  signInWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value);
-});
-
-modalSignUpBtn.addEventListener("click", () => {
-  signUpWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value);
-});
-
 modalDownloadBtn.addEventListener("click", () => {
-  closeAuthModal();
+  closeDeliveryModal();
   window.setTimeout(() => window.print(), 100);
 });
 
@@ -1207,10 +976,9 @@ clearBtn.addEventListener("click", () => {
   renderPhoto("");
   currentPage = "personal";
   updatePageUi();
-  localStorage.removeItem(storageKey);
   render(getFormData());
   setSaveStatus("Pronto para editar", false);
 });
 
-loadSavedData();
-initCloudClient();
+localStorage.removeItem("curriculo-pro-data");
+loadInitialData();
