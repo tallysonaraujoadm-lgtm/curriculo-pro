@@ -49,10 +49,10 @@ const pages = ["personal", "profile", "experience", "education", "template", "fi
 const pageNames = {
   personal: "Dados pessoais",
   profile: "Perfil e habilidades",
-  experience: "Experiencia profissional",
-  education: "Formacao",
+  experience: "Experiência profissional",
+  education: "Formação",
   template: "Estilo visual",
-  finish: "Conclusao"
+  finish: "Conclusão"
 };
 
 let currentPage = "personal";
@@ -173,12 +173,12 @@ const defaults = {
   role: "Cargo desejado",
   phone: "(65) 99999-9999",
   email: "voce@email.com",
-  location: "Cuiaba, MT",
+  location: "Cuiabá, MT",
   link: "linkedin.com/in/seunome",
-  summary: "Escreva um resumo curto sobre sua experiencia, area de atuacao e principais pontos fortes.",
-  skills: "Atendimento ao cliente\nExcel intermediario\nRedes de computadores",
-  experience: "Empresa - Cargo - Periodo\nDescreva suas principais atividades e resultados.",
-  education: "Curso - Instituicao - Ano\nCertificacoes relevantes",
+  summary: "Escreva um resumo curto sobre sua experiência, área de atuação e principais pontos fortes.",
+  skills: "Atendimento ao cliente\nExcel intermediário\nRedes de computadores",
+  experience: "Empresa - Cargo - Período\nDescreva suas principais atividades e resultados.",
+  education: "Curso - Instituição - Ano\nCertificações relevantes",
   template: "classic",
   style: "teal",
   photoData: "",
@@ -586,13 +586,13 @@ function createPeriodGroup(item) {
 
   group.className = "period-group";
   title.className = "period-title";
-  title.textContent = "Periodo";
+  title.textContent = "Período";
   grid.className = "period-grid";
   grid.append(
-    createSelect("Mes de ingresso", "startMonth", item.startMonth, months, "Mes"),
+    createSelect("Mês de ingresso", "startMonth", item.startMonth, months, "Mês"),
     createSelect("Ano de ingresso", "startYear", item.startYear, years, "Ano"),
-    createSelect("Mes de saida", "endMonth", item.endMonth, months, "Mes"),
-    createSelect("Ano de saida", "endYear", item.endYear, years, "Ano")
+    createSelect("Mês de saída", "endMonth", item.endMonth, months, "Mês"),
+    createSelect("Ano de saída", "endYear", item.endYear, years, "Ano")
   );
   group.append(title, grid, createCurrentCheckbox(item.current));
 
@@ -627,7 +627,7 @@ function renderExperienceEditor(items) {
     wrapper.dataset.type = "experience";
     wrapper.dataset.index = String(index);
     header.className = "dynamic-item-head";
-    title.textContent = `Experiencia ${index + 1}`;
+    title.textContent = `Experiência ${index + 1}`;
     remove.className = "ghost-button remove-item";
     remove.type = "button";
     remove.dataset.remove = "experience";
@@ -660,7 +660,7 @@ function renderEducationEditor(items) {
     wrapper.dataset.type = "education";
     wrapper.dataset.index = String(index);
     header.className = "dynamic-item-head";
-    title.textContent = `Formacao ${index + 1}`;
+    title.textContent = `Formação ${index + 1}`;
     remove.className = "ghost-button remove-item";
     remove.type = "button";
     remove.dataset.remove = "education";
@@ -671,9 +671,9 @@ function renderEducationEditor(items) {
     wrapper.append(
       header,
       createInput("Curso", "course", item.course, "Nome do curso"),
-      createInput("Instituicao", "institution", item.institution, "Nome da instituicao"),
+      createInput("Instituição", "institution", item.institution, "Nome da instituição"),
       createPeriodGroup(item),
-      createInput("Detalhes", "details", item.details, "Certificacoes, status ou observacoes relevantes.", true)
+      createInput("Detalhes", "details", item.details, "Certificações, status ou observações relevantes.", true)
     );
 
     return wrapper;
@@ -710,7 +710,7 @@ function updatePageUi() {
   stepCounter.textContent = `${pageIndex + 1} de ${pages.length}`;
   progressBar.style.width = `${((pageIndex + 1) / pages.length) * 100}%`;
   prevPageBtn.disabled = pageIndex === 0;
-  nextPageBtn.textContent = currentPage === "finish" ? "Salvar em PDF" : "Avancar";
+  nextPageBtn.textContent = currentPage === "finish" ? "Salvar em PDF" : "Avançar";
 }
 
 function setPage(page) {
@@ -738,7 +738,7 @@ function getSuggestions(data) {
   };
 
   if (!data.name || data.name.trim().split(/\s+/).length < 2) {
-    suggestionsByPage.personal.push("Use nome e sobrenome para deixar o curriculo mais profissional.");
+    suggestionsByPage.personal.push("Use nome e sobrenome para deixar o currículo mais profissional.");
   }
 
   if (!data.role || data.role.trim().length < 4) {
@@ -750,49 +750,49 @@ function getSuggestions(data) {
   }
 
   if (data.email && !data.email.includes("@")) {
-    suggestionsByPage.personal.push("Revise o e-mail: ele parece estar sem o simbolo @.");
+    suggestionsByPage.personal.push("Revise o e-mail: ele parece estar sem o símbolo @.");
   }
 
   if (summaryWords < 18) {
-    suggestionsByPage.profile.push("Escreva um resumo com 2 ou 3 frases, citando area de atuacao, experiencia e principais pontos fortes.");
+    suggestionsByPage.profile.push("Escreva um resumo com 2 ou 3 frases, citando área de atuação, experiência e principais pontos fortes.");
   }
 
   if (summaryWords > 80) {
-    suggestionsByPage.profile.push("Seu resumo esta longo. Tente deixar entre 30 e 70 palavras.");
+    suggestionsByPage.profile.push("Seu resumo está longo. Tente deixar entre 30 e 70 palavras.");
   }
 
   if (skills.length < 4) {
-    suggestionsByPage.profile.push("Adicione mais habilidades tecnicas e comportamentais, uma por linha.");
+    suggestionsByPage.profile.push("Adicione mais habilidades técnicas e comportamentais, uma por linha.");
   }
 
   if (!data.experiences.some(hasAnyValue)) {
-    suggestionsByPage.experience.push("Adicione pelo menos uma experiencia profissional, estagio, projeto ou trabalho autonomo.");
+    suggestionsByPage.experience.push("Adicione pelo menos uma experiência profissional, estágio, projeto ou trabalho autônomo.");
   }
 
-  if (experience && !/resultado|reduzi|aumentei|melhorei|organizei|implantei|atendi|responsavel/i.test(experience)) {
-    suggestionsByPage.experience.push("Nas experiencias, cite resultados ou responsabilidades concretas, como atendimento, organizacao, implantacao ou melhorias.");
+  if (experience && !/resultado|reduzi|aumentei|melhorei|organizei|implantei|atendi|respons[aá]vel/i.test(experience)) {
+    suggestionsByPage.experience.push("Nas experiências, cite resultados ou responsabilidades concretas, como atendimento, organização, implantação ou melhorias.");
   }
 
   if (!data.educations.some(hasAnyValue)) {
-    suggestionsByPage.education.push("Adicione sua formacao principal, cursos ou certificacoes relevantes.");
+    suggestionsByPage.education.push("Adicione sua formação principal, cursos ou certificações relevantes.");
   }
 
-  if (education && !/\d{4}|atual|cursando|concluido/i.test(education)) {
-    suggestionsByPage.education.push("Inclua ano, periodo, 'cursando' ou 'concluido' na formacao.");
+  if (education && !/\d{4}|atual|cursando|conclu[ií]do/i.test(education)) {
+    suggestionsByPage.education.push("Inclua ano, período, “cursando” ou “concluído” na formação.");
   }
 
-  suggestionsByPage.template.push("Use Classico, Moderno, Compacto ou Executivo quando nao quiser foto no curriculo.");
-  suggestionsByPage.template.push("Use Com foto ou Foto lateral quando a vaga pedir apresentacao visual ou quando a foto fizer sentido para a area.");
+  suggestionsByPage.template.push("Use Clássico, Moderno, Compacto ou Executivo quando não quiser foto no currículo.");
+  suggestionsByPage.template.push("Use Com foto ou Foto lateral quando a vaga pedir apresentação visual ou quando a foto fizer sentido para a área.");
   if (!data.photoData) {
     suggestionsByPage.template.push("Adicione uma foto profissional para visualizar os modelos com foto.");
   }
   suggestionsByPage.template.push("Escolha uma cor discreta. Verde e azul funcionam bem para a maioria das vagas; grafite fica mais formal.");
   suggestionsByPage.finish.push("Revise telefone, e-mail, datas e ortografia antes de salvar em PDF.");
-  suggestionsByPage.finish.push("Se o curriculo passar de uma pagina, use o modelo Compacto ou reduza textos repetidos.");
+  suggestionsByPage.finish.push("Se o currículo passar de uma página, use o modelo Compacto ou reduza textos repetidos.");
 
   Object.keys(suggestionsByPage).forEach((page) => {
     if (!suggestionsByPage[page].length) {
-      suggestionsByPage[page].push("Esta etapa esta bem preenchida. Revise ortografia, datas e consistencia antes de gerar o PDF.");
+      suggestionsByPage[page].push("Esta etapa está bem preenchida. Revise ortografia, datas e consistência antes de gerar o PDF.");
     }
   });
 
@@ -814,7 +814,7 @@ function renderSuggestions(data) {
 
 function saveAndRender() {
   const data = getFormData();
-  setSaveStatus("Alteracoes desta sessao", false);
+  setSaveStatus("Alterações desta sessão", false);
   render(data);
 }
 
@@ -852,10 +852,10 @@ function sendResumeByEmail() {
     return;
   }
 
-  const subject = encodeURIComponent("Seu currículo do Curriculo Pro");
+  const subject = encodeURIComponent("Seu currículo do Currículo Pro");
   const body = encodeURIComponent(
     [
-      "Seu currículo foi preparado no Curriculo Pro.",
+      "Seu currículo foi preparado no Currículo Pro.",
       "",
       "Abra o site para revisar e gerar o PDF.",
       `Arquivo sugerido: ${getResumeFileName()}`

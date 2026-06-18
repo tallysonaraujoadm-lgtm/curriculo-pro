@@ -18,10 +18,10 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Curriculo Pro",
+        "name": "Currículo Pro",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
-        "description": "Ferramenta online para criar curriculos com modelos prontos, foto, sugestoes e exportacao em PDF."
+        "description": "Ferramenta online para criar currículos com modelos prontos, foto, sugestões e exportação em PDF."
       }
     </script>
   </head>
@@ -277,11 +277,11 @@
     </div>
 
     <main class="app-shell" id="editor">
-      <section class="editor-panel" aria-label="Editor de curriculo">
+      <section class="editor-panel" aria-label="Editor de currículo">
         <header class="topbar">
           <div>
-            <p class="eyebrow">Curriculo Pro</p>
-            <h1>Crie seu curriculo</h1>
+            <p class="eyebrow">Currículo Pro</p>
+            <h1>Crie seu currículo</h1>
           </div>
           <div class="actions">
             <button class="ghost-button" id="backLandingBtn" type="button">Início</button>
@@ -322,7 +322,7 @@
             </label>
             <label>
               Cidade/UF
-              <input name="location" placeholder="Cuiaba, MT">
+              <input name="location" placeholder="Cuiabá, MT">
             </label>
             <label>
               LinkedIn ou site
@@ -344,26 +344,26 @@
             <legend>Resumo</legend>
             <label class="full">
               Perfil profissional
-              <textarea name="summary" rows="5" placeholder="Profissional com experiencia em..."></textarea>
+              <textarea name="summary" rows="5" placeholder="Profissional com experiência em..."></textarea>
             </label>
             <label class="full">
               Habilidades
-              <textarea name="skills" rows="4" placeholder="Atendimento ao cliente&#10;Excel intermediario&#10;Redes de computadores"></textarea>
+              <textarea name="skills" rows="4" placeholder="Atendimento ao cliente&#10;Excel intermediário&#10;Redes de computadores"></textarea>
             </label>
             <div class="skill-bank full" aria-label="Habilidades prontas">
               <p>Escolha habilidades prontas ou adicione outras no campo acima.</p>
               <div class="skill-options" id="skillOptions">
                 <button type="button" data-skill="Atendimento ao cliente">Atendimento ao cliente</button>
-                <button type="button" data-skill="Comunicacao">Comunicacao</button>
+                <button type="button" data-skill="Comunicação">Comunicação</button>
                 <button type="button" data-skill="Trabalho em equipe">Trabalho em equipe</button>
-                <button type="button" data-skill="Organizacao">Organizacao</button>
-                <button type="button" data-skill="Excel intermediario">Excel intermediario</button>
+                <button type="button" data-skill="Organização">Organização</button>
+                <button type="button" data-skill="Excel intermediário">Excel intermediário</button>
                 <button type="button" data-skill="Pacote Office">Pacote Office</button>
                 <button type="button" data-skill="Redes de computadores">Redes de computadores</button>
-                <button type="button" data-skill="Suporte tecnico">Suporte tecnico</button>
+                <button type="button" data-skill="Suporte técnico">Suporte técnico</button>
                 <button type="button" data-skill="Vendas">Vendas</button>
-                <button type="button" data-skill="Resolucao de problemas">Resolucao de problemas</button>
-                <button type="button" data-skill="Lideranca">Lideranca</button>
+                <button type="button" data-skill="Resolução de problemas">Resolução de problemas</button>
+                <button type="button" data-skill="Liderança">Liderança</button>
                 <button type="button" data-skill="Pontualidade">Pontualidade</button>
               </div>
               <div class="custom-skill">
@@ -374,20 +374,20 @@
           </fieldset>
 
           <fieldset class="form-page" data-page-panel="experience">
-            <legend>Experiencia</legend>
+            <legend>Experiência</legend>
             <div class="dynamic-list full" id="experienceList"></div>
-            <button class="ghost-button add-button full" id="addExperienceBtn" type="button">Adicionar experiencia</button>
+            <button class="ghost-button add-button full" id="addExperienceBtn" type="button">Adicionar experiência</button>
           </fieldset>
 
           <fieldset class="form-page" data-page-panel="education">
-            <legend>Formacao</legend>
+            <legend>Formação</legend>
             <div class="dynamic-list full" id="educationList"></div>
-            <button class="ghost-button add-button full" id="addEducationBtn" type="button">Adicionar formacao</button>
+            <button class="ghost-button add-button full" id="addEducationBtn" type="button">Adicionar formação</button>
           </fieldset>
 
           <fieldset class="form-page" data-page-panel="template">
-            <legend>Estilo do curriculo</legend>
-            <div class="template-switch full" role="group" aria-label="Modelo do curriculo">
+            <legend>Estilo do currículo</legend>
+            <div class="template-switch full" role="group" aria-label="Modelo do currículo">
               <button class="template-option active" type="button" data-template="classic">
                 <span class="template-preview mini-classic">
                   <span class="mini-title"></span>
@@ -397,7 +397,7 @@
                   <span class="mini-line wide"></span>
                   <span class="mini-line short"></span>
                 </span>
-                <span>Classico</span>
+                <span>Clássico</span>
               </button>
               <button class="template-option" type="button" data-template="modern">
                 <span class="template-preview mini-modern">
@@ -457,7 +457,7 @@
                 <span>Foto lateral</span>
               </button>
             </div>
-            <div class="style-switch full" role="group" aria-label="Cor do curriculo">
+            <div class="style-switch full" role="group" aria-label="Cor do currículo">
               <button class="style-option active" type="button" data-style="teal">
                 <span class="style-swatch teal"></span>
                 Verde
@@ -478,9 +478,9 @@
           </fieldset>
 
           <fieldset class="form-page finish-page" data-page-panel="finish">
-            <legend>Conclusao</legend>
+            <legend>Conclusão</legend>
             <div class="finish-box full">
-              <p>Seu curriculo aparece ao lado. Revise a aparência e escolha como deseja receber o arquivo.</p>
+              <p>Seu currículo aparece ao lado. Revise a aparência e escolha como deseja receber o arquivo.</p>
               <div class="finish-actions">
                 <button class="primary-button" id="finishDeliveryBtn" type="button">Continuar</button>
               </div>
@@ -488,9 +488,9 @@
           </fieldset>
         </form>
 
-        <section class="suggestion-panel" aria-label="Sugestoes para melhorar o curriculo">
+        <section class="suggestion-panel" aria-label="Sugestões para melhorar o currículo">
           <div class="suggestion-head">
-            <p class="eyebrow">Sugestoes</p>
+            <p class="eyebrow">Sugestões</p>
             <h2 id="suggestionTitle">Melhorias para esta etapa</h2>
           </div>
           <ul id="suggestionList" class="suggestion-list"></ul>
@@ -498,7 +498,7 @@
 
         <div class="page-controls">
           <button class="ghost-button" id="prevPageBtn" type="button">Voltar</button>
-          <button class="primary-button" id="nextPageBtn" type="button">Avancar</button>
+          <button class="primary-button" id="nextPageBtn" type="button">Avançar</button>
         </div>
         <footer class="site-footer">
           <span id="saveStatus">Pronto para editar</span>
@@ -509,7 +509,7 @@
         </footer>
       </section>
 
-      <aside class="preview-panel" aria-label="Previa do curriculo">
+      <aside class="preview-panel" aria-label="Prévia do currículo">
         <article class="resume-sheet classic" id="resumePreview">
           <header class="resume-header">
             <div class="resume-photo-wrap">
@@ -522,38 +522,38 @@
             <ul class="contact-list">
               <li data-output="phone">(65) 99999-9999</li>
               <li data-output="email">voce@email.com</li>
-              <li data-output="location">Cuiaba, MT</li>
+              <li data-output="location">Cuiabá, MT</li>
               <li data-output="link">linkedin.com/in/seunome</li>
             </ul>
           </header>
 
           <section data-preview-section="summary">
             <h3>Perfil</h3>
-            <p data-output="summary">Escreva um resumo curto sobre sua experiencia, area de atuacao e principais pontos fortes.</p>
+            <p data-output="summary">Escreva um resumo curto sobre sua experiência, área de atuação e principais pontos fortes.</p>
           </section>
 
           <section data-preview-section="skills">
             <h3>Habilidades</h3>
             <ul class="line-list" data-output-list="skills">
               <li>Atendimento ao cliente</li>
-              <li>Excel intermediario</li>
+              <li>Excel intermediário</li>
               <li>Redes de computadores</li>
             </ul>
           </section>
 
           <section data-preview-section="experience">
-            <h3>Experiencia</h3>
+            <h3>Experiência</h3>
             <div class="text-block" data-output-block="experience">
-              <p>Empresa - Cargo - Periodo</p>
+              <p>Empresa - Cargo - Período</p>
               <p>Descreva suas principais atividades e resultados.</p>
             </div>
           </section>
 
           <section data-preview-section="education">
-            <h3>Formacao</h3>
+            <h3>Formação</h3>
             <div class="text-block" data-output-block="education">
-              <p>Curso - Instituicao - Ano</p>
-              <p>Certificacoes relevantes</p>
+              <p>Curso - Instituição - Ano</p>
+              <p>Certificações relevantes</p>
             </div>
           </section>
         </article>
@@ -563,7 +563,7 @@
     <div class="delivery-overlay" id="deliveryOverlay" hidden>
       <div class="delivery-modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
         <button class="modal-close" id="closeDeliveryModalBtn" type="button" aria-label="Fechar">×</button>
-        <p class="eyebrow">Curriculo pronto</p>
+        <p class="eyebrow">Currículo pronto</p>
         <div class="delivery-step">
           <h2 id="deliveryModalTitle">Como deseja receber?</h2>
           <p class="delivery-copy">Escolha uma opção para continuar.</p>
