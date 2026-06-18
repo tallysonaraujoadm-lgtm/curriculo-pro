@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ferramenta online para montar curriculos de forma rapida, com modelos prontos, foto, sugestoes e exportacao em PDF.">
+    <meta name="description" content="Crie seu currículo profissional grátis em poucos minutos. Escolha um modelo moderno, personalize seus dados e baixe em PDF.">
+    <meta name="keywords" content="criar currículo online, currículo profissional, currículo grátis, currículo em PDF">
     <meta name="theme-color" content="#166c7d">
-    <meta property="og:title" content="Curriculo Pro">
-    <meta property="og:description" content="Crie curriculos com modelos prontos, foto, sugestoes e exportacao em PDF.">
+    <meta property="og:title" content="Currículo Pro | Crie seu currículo profissional grátis">
+    <meta property="og:description" content="Modelos modernos, edição simples e download em PDF. Crie um currículo pronto para enviar às empresas.">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_BR">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Curriculo Pro | Criador de curriculos online</title>
+    <title>Criar currículo online grátis | Currículo Pro</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <script type="application/ld+json">
@@ -24,8 +25,258 @@
       }
     </script>
   </head>
-  <body>
-    <main class="app-shell">
+  <body class="landing-mode">
+    <div class="landing-page" id="inicio">
+      <header class="landing-header">
+        <a class="brand" href="#inicio" aria-label="Currículo Pro - início">
+          <span class="brand-mark" aria-hidden="true">CP</span>
+          <span>Currículo Pro</span>
+        </a>
+        <nav class="landing-nav" aria-label="Navegação principal">
+          <a href="#beneficios">Benefícios</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#modelos">Modelos</a>
+          <button class="nav-cta" type="button" data-start-editor>Criar currículo</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero-section" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="hero-kicker"><span aria-hidden="true">✓</span> Grátis, rápido e sem instalar nada</p>
+            <h1 id="hero-title">Crie um currículo profissional em poucos minutos</h1>
+            <p class="hero-subtitle">Escolha um modelo moderno, personalize suas informações e baixe um currículo pronto para enviar às empresas.</p>
+            <div class="hero-actions">
+              <button class="landing-primary" type="button" data-start-editor>
+                Criar meu currículo grátis
+                <span aria-hidden="true">→</span>
+              </button>
+              <a class="landing-secondary" href="#modelos">Ver modelos</a>
+            </div>
+            <div class="social-proof" aria-label="Avaliação dos usuários">
+              <span class="proof-count" aria-hidden="true">6</span>
+              <span><strong>6 modelos</strong> para diferentes perfis profissionais</span>
+            </div>
+            <ul class="hero-trust" aria-label="Vantagens">
+              <li>Sem cartão de crédito</li>
+              <li>Download em PDF</li>
+              <li>Funciona no celular</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual" aria-label="Exemplo de currículo profissional">
+            <div class="visual-glow"></div>
+            <div class="resume-mockup">
+              <div class="mockup-toolbar">
+                <span></span><span></span><span></span>
+                <small>curriculo-profissional.pdf</small>
+              </div>
+              <div class="mockup-paper">
+                <div class="mockup-heading">
+                  <div class="mockup-avatar">MS</div>
+                  <div>
+                    <strong>Mariana Silva</strong>
+                    <span>Analista de Marketing</span>
+                  </div>
+                </div>
+                <div class="mockup-contact">Cuiabá, MT · mariana@email.com · (65) 99999-0000</div>
+                <div class="mockup-section">
+                  <b>PERFIL PROFISSIONAL</b>
+                  <p>Profissional orientada a resultados, com experiência em campanhas digitais e análise de indicadores.</p>
+                </div>
+                <div class="mockup-section">
+                  <b>EXPERIÊNCIA</b>
+                  <strong>Analista de Marketing · Empresa Nova</strong>
+                  <span>2022 — Atual</span>
+                  <i></i><i></i><i class="short"></i>
+                </div>
+                <div class="mockup-columns">
+                  <div class="mockup-section">
+                    <b>FORMAÇÃO</b>
+                    <strong>Marketing</strong>
+                    <span>Universidade Federal</span>
+                  </div>
+                  <div class="mockup-section">
+                    <b>HABILIDADES</b>
+                    <span>Estratégia · Analytics</span>
+                    <span>Comunicação · SEO</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="floating-badge badge-top"><span>✓</span> Pronto para enviar</div>
+            <div class="floating-badge badge-bottom"><span>PDF</span> Download rápido</div>
+          </div>
+        </section>
+
+        <section class="trust-strip" aria-label="Recursos de confiança">
+          <div><span aria-hidden="true">🔒</span><strong>Dados protegidos</strong><small>Suas informações ficam no dispositivo</small></div>
+          <div><span aria-hidden="true">📄</span><strong>Formato profissional</strong><small>Leitura clara para recrutadores</small></div>
+          <div><span aria-hidden="true">🌎</span><strong>Acesso em qualquer lugar</strong><small>Use no computador ou celular</small></div>
+        </section>
+
+        <section class="landing-section benefits-section" id="beneficios">
+          <div class="section-heading">
+            <p class="section-kicker">Tudo o que você precisa</p>
+            <h2>Um currículo melhor abre mais portas</h2>
+            <p>Ferramentas simples para apresentar sua experiência de forma clara, moderna e profissional.</p>
+          </div>
+          <div class="benefit-grid">
+            <article><span class="feature-icon">✦</span><h3>Modelos modernos</h3><p>Escolha entre estilos criados para diferentes áreas e níveis de experiência.</p></article>
+            <article><span class="feature-icon">✎</span><h3>Fácil de editar</h3><p>Preencha cada etapa com orientações práticas e veja o resultado rapidamente.</p></article>
+            <article><span class="feature-icon">↓</span><h3>Download em PDF</h3><p>Gere um arquivo com aparência profissional, pronto para candidaturas.</p></article>
+            <article><span class="feature-icon">✓</span><h3>Dicas inteligentes</h3><p>Receba sugestões para fortalecer seu perfil, habilidades e experiências.</p></article>
+            <article><span class="feature-icon">◫</span><h3>Compatível com celular</h3><p>Crie e revise seu currículo em qualquer tamanho de tela.</p></article>
+            <article><span class="feature-icon">☁</span><h3>Sem instalação</h3><p>Comece direto no navegador, sem baixar programas ou criar planilhas.</p></article>
+          </div>
+          <button class="landing-primary section-cta" type="button" data-start-editor>Criar meu currículo agora <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="landing-section steps-section" id="como-funciona">
+          <div class="section-heading">
+            <p class="section-kicker">Simples do início ao fim</p>
+            <h2>Seu currículo pronto em 3 passos</h2>
+          </div>
+          <div class="steps-grid">
+            <article><span class="step-number">01</span><div class="step-visual template-choice" aria-hidden="true"><i></i><i></i><i></i></div><h3>Escolha um modelo</h3><p>Selecione o visual que combina com sua área e objetivo profissional.</p></article>
+            <article><span class="step-number">02</span><div class="step-visual form-choice" aria-hidden="true"><i></i><i></i><i></i></div><h3>Preencha suas informações</h3><p>Adicione dados, experiências e habilidades com ajuda das nossas sugestões.</p></article>
+            <article><span class="step-number">03</span><div class="step-visual download-choice" aria-hidden="true"><span>PDF</span><b>↓</b></div><h3>Baixe e envie</h3><p>Revise o resultado e salve seu currículo profissional em PDF.</p></article>
+          </div>
+        </section>
+
+        <section class="landing-section models-section" id="modelos">
+          <div class="section-heading">
+            <p class="section-kicker">Feito para destacar você</p>
+            <h2>Modelos para cada momento da carreira</h2>
+            <p>Escolha um estilo, teste as cores e abra o editor com o modelo já aplicado.</p>
+          </div>
+          <div class="model-gallery">
+            <div class="model-carousel">
+              <button class="carousel-arrow previous" id="previousModelBtn" type="button" aria-label="Modelo anterior">‹</button>
+              <div class="model-options" id="modelOptions" role="group" aria-label="Escolha um modelo">
+                <button class="model-choice active" type="button" data-landing-template="classic">
+                  <span class="model-tag">Clássico</span>
+                  <span class="model-thumbnail thumbnail-classic">
+                    <span class="thumb-name">Mariana Silva</span><span class="thumb-role">Analista de Marketing</span>
+                    <span class="thumb-rule"></span><b>PERFIL</b><i></i><i></i><b>EXPERIÊNCIA</b><i></i><i></i><i class="short"></i>
+                  </span>
+                  <strong>Clássico</strong><small>Limpo e versátil</small>
+                </button>
+                <button class="model-choice" type="button" data-landing-template="modern">
+                  <span class="model-tag">Popular</span>
+                  <span class="model-thumbnail thumbnail-modern">
+                    <span class="thumb-band"></span><span class="thumb-name">Mariana Silva</span><span class="thumb-role">Marketing</span>
+                    <b>PERFIL</b><i></i><i></i><span class="thumb-split"><span><b>EXPERIÊNCIA</b><i></i><i></i></span><span><b>HABILIDADES</b><i></i><i></i></span></span>
+                  </span>
+                  <strong>Moderno</strong><small>Visual contemporâneo</small>
+                </button>
+                <button class="model-choice" type="button" data-landing-template="compact">
+                  <span class="model-tag">Objetivo</span>
+                  <span class="model-thumbnail thumbnail-compact">
+                    <span class="thumb-name">Mariana Silva</span><span class="thumb-role">Analista de Marketing · Cuiabá</span>
+                    <span class="thumb-rule"></span><b>EXPERIÊNCIA PROFISSIONAL</b><i></i><i></i><i></i><b>FORMAÇÃO E CURSOS</b><i></i><i></i><b>COMPETÊNCIAS</b><i></i>
+                  </span>
+                  <strong>Compacto</strong><small>Mais conteúdo por página</small>
+                </button>
+                <button class="model-choice" type="button" data-landing-template="executive">
+                  <span class="model-tag">Elegante</span>
+                  <span class="model-thumbnail thumbnail-executive">
+                    <span class="thumb-name">MARIANA SILVA</span><span class="thumb-role">ANALISTA DE MARKETING</span>
+                    <span class="thumb-rule"></span><b>RESUMO PROFISSIONAL</b><i></i><i></i><b>EXPERIÊNCIA</b><i></i><i></i><b>FORMAÇÃO</b><i></i>
+                  </span>
+                  <strong>Executivo</strong><small>Sóbrio e sofisticado</small>
+                </button>
+                <button class="model-choice" type="button" data-landing-template="portrait">
+                  <span class="model-tag">Com foto</span>
+                  <span class="model-thumbnail thumbnail-portrait">
+                    <span class="thumb-photo">MS</span><span class="thumb-name">Mariana Silva</span><span class="thumb-role">Marketing</span>
+                    <span class="thumb-rule"></span><b>PERFIL</b><i></i><i></i><b>EXPERIÊNCIA</b><i></i><i></i>
+                  </span>
+                  <strong>Com foto</strong><small>Apresentação pessoal</small>
+                </button>
+                <button class="model-choice" type="button" data-landing-template="sidebar">
+                  <span class="model-tag">Marcante</span>
+                  <span class="model-thumbnail thumbnail-sidebar">
+                    <span class="thumb-side"><span class="thumb-photo">MS</span><b>CONTATO</b><i></i><i></i><b>HABILIDADES</b><i></i><i></i></span>
+                    <span class="thumb-main"><span class="thumb-name">Mariana<br>Silva</span><span class="thumb-role">Marketing</span><b>PERFIL</b><i></i><i></i><b>EXPERIÊNCIA</b><i></i><i></i></span>
+                  </span>
+                  <strong>Foto lateral</strong><small>Estrutura de alto impacto</small>
+                </button>
+              </div>
+              <button class="carousel-arrow next" id="nextModelBtn" type="button" aria-label="Próximo modelo">›</button>
+            </div>
+
+            <div class="interactive-model-preview">
+              <div class="model-preview-toolbar">
+                <div>
+                  <p>Visualizando</p>
+                  <strong id="landingModelName">Clássico</strong>
+                </div>
+                <div class="landing-color-options" role="group" aria-label="Cor do modelo">
+                  <button class="active teal" type="button" data-landing-style="teal" aria-label="Verde"></button>
+                  <button class="blue" type="button" data-landing-style="blue" aria-label="Azul"></button>
+                  <button class="graphite" type="button" data-landing-style="graphite" aria-label="Grafite"></button>
+                  <button class="wine" type="button" data-landing-style="wine" aria-label="Vinho"></button>
+                </div>
+              </div>
+              <div class="interactive-paper classic style-teal" id="landingModelPreview">
+                <aside class="interactive-sidebar">
+                  <span class="interactive-photo">MS</span>
+                </aside>
+                <div class="interactive-content">
+                  <header>
+                    <span class="interactive-photo header-photo">MS</span>
+                    <div><h3>Mariana Silva</h3><p>Analista de Marketing</p></div>
+                    <small>Cuiabá, MT · mariana@email.com</small>
+                  </header>
+                  <section><b>Perfil profissional</b><p>Profissional orientada a resultados, com experiência em campanhas digitais e análise de indicadores.</p></section>
+                  <section><b>Experiência</b><h4>Analista de Marketing · Empresa Nova</h4><small>2022 — Atual</small><i></i><i></i><i class="short"></i></section>
+                  <div class="interactive-columns">
+                    <section><b>Formação</b><h4>Marketing</h4><small>Universidade Federal</small></section>
+                    <section><b>Habilidades</b><p>Estratégia · Analytics<br>Comunicação · SEO</p></section>
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-dots" id="modelCarouselDots" aria-label="Navegação dos modelos"></div>
+              <div class="model-preview-actions">
+                <span>Você poderá editar todos os dados depois.</span>
+                <button class="landing-primary" id="useSelectedModelBtn" type="button">Usar este modelo <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-section faq-section">
+          <div class="section-heading">
+            <p class="section-kicker">Dúvidas frequentes</p>
+            <h2>Perguntas sobre o criador de currículos</h2>
+          </div>
+          <div class="faq-list">
+            <details><summary>É grátis criar meu currículo?</summary><p>Sim. Você pode preencher, personalizar e gerar seu currículo em PDF sem custo.</p></details>
+            <details><summary>Preciso instalar algum programa?</summary><p>Não. A ferramenta funciona diretamente no navegador do computador ou celular.</p></details>
+            <details><summary>Meus dados ficam protegidos?</summary><p>Os dados são usados para montar o currículo e permanecem no seu dispositivo durante a sessão.</p></details>
+            <details><summary>Posso mudar o modelo depois?</summary><p>Sim. Você pode trocar modelo e cor sem perder as informações já preenchidas.</p></details>
+          </div>
+        </section>
+
+        <section class="final-cta">
+          <div>
+            <p class="section-kicker">Seu próximo passo começa aqui</p>
+            <h2>Pronto para criar um currículo que chama atenção?</h2>
+            <p>Comece agora. Leva poucos minutos e você não precisa instalar nada.</p>
+          </div>
+          <button class="landing-primary light-cta" type="button" data-start-editor>Criar meu currículo grátis <span aria-hidden="true">→</span></button>
+        </section>
+      </main>
+
+      <footer class="landing-footer">
+        <a class="brand" href="#inicio"><span class="brand-mark">CP</span><span>Currículo Pro</span></a>
+        <p>Crie um currículo profissional, moderno e pronto para novas oportunidades.</p>
+        <nav><a href="privacy.html">Privacidade</a><a href="terms.html">Termos de uso</a></nav>
+      </footer>
+    </div>
+
+    <main class="app-shell" id="editor">
       <section class="editor-panel" aria-label="Editor de curriculo">
         <header class="topbar">
           <div>
@@ -33,6 +284,7 @@
             <h1>Crie seu curriculo</h1>
           </div>
           <div class="actions">
+            <button class="ghost-button" id="backLandingBtn" type="button">Início</button>
             <button class="ghost-button" id="clearBtn" type="button">Limpar</button>
             <button class="primary-button" id="printBtn" type="button">PDF</button>
           </div>

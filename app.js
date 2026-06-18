@@ -31,6 +31,17 @@ const deliveryState = document.querySelector("#deliveryState");
 const prevPageBtn = document.querySelector("#prevPageBtn");
 const nextPageBtn = document.querySelector("#nextPageBtn");
 const finishDeliveryBtn = document.querySelector("#finishDeliveryBtn");
+const startEditorButtons = document.querySelectorAll("[data-start-editor]");
+const backLandingBtn = document.querySelector("#backLandingBtn");
+const landingModelButtons = document.querySelectorAll("[data-landing-template]");
+const landingStyleButtons = document.querySelectorAll("[data-landing-style]");
+const landingModelPreview = document.querySelector("#landingModelPreview");
+const landingModelName = document.querySelector("#landingModelName");
+const useSelectedModelBtn = document.querySelector("#useSelectedModelBtn");
+const modelOptions = document.querySelector("#modelOptions");
+const previousModelBtn = document.querySelector("#previousModelBtn");
+const nextModelBtn = document.querySelector("#nextModelBtn");
+const modelCarouselDots = document.querySelector("#modelCarouselDots");
 const templates = ["classic", "modern", "compact", "executive", "portrait", "sidebar"];
 const photoTemplates = ["portrait", "sidebar"];
 
@@ -46,7 +57,116 @@ const pageNames = {
 
 let currentPage = "personal";
 let photoData = "";
+let selectedLandingTemplate = "classic";
+let selectedLandingStyle = "teal";
 const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const landingModelNames = {
+  classic: "Clássico",
+  modern: "Moderno",
+  compact: "Compacto",
+  executive: "Executivo",
+  portrait: "Com foto",
+  sidebar: "Foto lateral"
+};
+
+function updateLandingModelPreview() {
+  if (!landingModelPreview) return;
+
+  landingModelPreview.classList.add("changing");
+  window.setTimeout(() => {
+    landingModelPreview.classList.remove(
+      ...templates,
+      "style-teal",
+      "style-blue",
+      "style-graphite",
+      "style-wine"
+    );
+    landingModelPreview.classList.add(selectedLandingTemplate, `style-${selectedLandingStyle}`);
+    landingModelPreview.classList.remove("changing");
+  }, 100);
+
+  if (landingModelName) {
+    landingModelName.textContent = landingModelNames[selectedLandingTemplate];
+  }
+
+  landingModelButtons.forEach((button) => {
+    const active = button.dataset.landingTemplate === selectedLandingTemplate;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+
+  landingStyleButtons.forEach((button) => {
+    const active = button.dataset.landingStyle === selectedLandingStyle;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+
+  if (modelCarouselDots) {
+    modelCarouselDots.querySelectorAll("button").forEach((dot) => {
+      dot.classList.toggle("active", dot.dataset.template === selectedLandingTemplate);
+    });
+  }
+}
+
+function selectLandingModel(template, centerCard = true) {
+  if (!templates.includes(template)) return;
+  selectedLandingTemplate = template;
+  updateLandingModelPreview();
+
+  if (!centerCard || !modelOptions) return;
+  const card = modelOptions.querySelector(`[data-landing-template="${template}"]`);
+  if (!card) return;
+
+  const left = card.offsetLeft - (modelOptions.clientWidth - card.offsetWidth) / 2;
+  modelOptions.scrollTo({ left, behavior: "smooth" });
+}
+
+function moveLandingModel(direction) {
+  const currentIndex = templates.indexOf(selectedLandingTemplate);
+  const nextIndex = (currentIndex + direction + templates.length) % templates.length;
+  selectLandingModel(templates[nextIndex]);
+}
+
+function createModelCarouselDots() {
+  if (!modelCarouselDots) return;
+
+  modelCarouselDots.replaceChildren(...templates.map((template) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.dataset.template = template;
+    dot.className = template === selectedLandingTemplate ? "active" : "";
+    dot.setAttribute("aria-label", `Ver modelo ${landingModelNames[template]}`);
+    dot.addEventListener("click", () => selectLandingModel(template));
+    return dot;
+  }));
+}
+
+function showEditor(updateHistory = true) {
+  document.body.classList.remove("landing-mode");
+  document.body.classList.add("editor-open");
+
+  if (updateHistory && window.location.hash !== "#editor") {
+    window.history.pushState({ view: "editor" }, "", "#editor");
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.setTimeout(() => {
+    const firstField = form.querySelector("input:not([type='file'])");
+    if (firstField) firstField.focus({ preventScroll: true });
+  }, 250);
+}
+
+function showLanding(updateHistory = true) {
+  document.body.classList.remove("editor-open", "is-finished");
+  document.body.classList.add("landing-mode");
+  closeDeliveryModal();
+
+  if (updateHistory) {
+    window.history.pushState({ view: "landing" }, "", window.location.pathname);
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 const defaults = {
   name: "Seu Nome",
@@ -274,6 +394,11 @@ function render(data) {
     renderTextNode(node, data[key]);
   });
 
+  renderTextSection(
+    "summary",
+    document.querySelector('[data-output="summary"]'),
+    data.summary
+  );
   renderListSection(
     "skills",
     document.querySelector("[data-output-list='skills']"),
@@ -301,6 +426,19 @@ function renderTextNode(node, value) {
   const text = (value || "").trim();
   node.hidden = !text;
   node.textContent = text;
+}
+
+function renderTextSection(sectionName, target, value) {
+  const section = target ? target.closest(`[data-preview-section="${sectionName}"]`) : null;
+  const text = (value || "").trim();
+
+  if (target) {
+    target.textContent = text;
+  }
+
+  if (section) {
+    section.hidden = !text;
+  }
 }
 
 function updateSkillButtons(skillsText) {
@@ -981,5 +1119,71 @@ clearBtn.addEventListener("click", () => {
   setSaveStatus("Pronto para editar", false);
 });
 
+startEditorButtons.forEach((button) => {
+  button.addEventListener("click", () => showEditor());
+});
+
+landingModelButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectLandingModel(button.dataset.landingTemplate);
+  });
+});
+
+if (previousModelBtn) {
+  previousModelBtn.addEventListener("click", () => moveLandingModel(-1));
+}
+
+if (nextModelBtn) {
+  nextModelBtn.addEventListener("click", () => moveLandingModel(1));
+}
+
+if (modelOptions) {
+  modelOptions.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveLandingModel(-1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveLandingModel(1);
+    }
+  });
+}
+
+landingStyleButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedLandingStyle = button.dataset.landingStyle;
+    updateLandingModelPreview();
+  });
+});
+
+if (useSelectedModelBtn) {
+  useSelectedModelBtn.addEventListener("click", () => {
+    setTemplate(selectedLandingTemplate);
+    setStyle(selectedLandingStyle);
+    saveAndRender();
+    showEditor();
+  });
+}
+
+if (backLandingBtn) {
+  backLandingBtn.addEventListener("click", () => showLanding());
+}
+
+window.addEventListener("popstate", () => {
+  if (window.location.hash === "#editor") {
+    showEditor(false);
+    return;
+  }
+
+  showLanding(false);
+});
+
 localStorage.removeItem("curriculo-pro-data");
 loadInitialData();
+createModelCarouselDots();
+updateLandingModelPreview();
+
+if (window.location.hash === "#editor") {
+  showEditor(false);
+}
