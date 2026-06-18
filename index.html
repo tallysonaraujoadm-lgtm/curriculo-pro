@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ferramenta online para montar curriculos de forma rapida, com modelos prontos, foto, sugestoes e exportacao em PDF.">
+    <meta name="theme-color" content="#166c7d">
+    <meta property="og:title" content="Curriculo Pro">
+    <meta property="og:description" content="Crie curriculos com modelos prontos, foto, sugestoes e exportacao em PDF.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Curriculo Pro | Criador de curriculos online</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Curriculo Pro",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "Ferramenta online para criar curriculos com modelos prontos, foto, sugestoes e exportacao em PDF."
+      }
+    </script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="editor-panel" aria-label="Editor de curriculo">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Curriculo Pro</p>
+            <h1>Crie seu curriculo</h1>
+          </div>
+          <div class="actions">
+            <button class="ghost-button" id="clearBtn" type="button">Limpar</button>
+            <button class="primary-button" id="printBtn" type="button">PDF</button>
+          </div>
+        </header>
+
+        <section class="cloud-panel" aria-label="Conta e sincronizacao">
+          <div class="cloud-head">
+            <div>
+              <p class="eyebrow">Conta</p>
+              <h2 id="cloudTitle">Salvar na nuvem</h2>
+              <p id="cloudUser">Nenhuma conta conectada</p>
+            </div>
+            <span id="cloudState">Offline</span>
+          </div>
+          <div class="cloud-grid">
+            <label>
+              URL do projeto
+              <input id="supabaseUrl" type="url" placeholder="https://seu-projeto.supabase.co">
+            </label>
+            <label>
+              Chave anon
+              <input id="supabaseKey" type="password" placeholder="sua chave anon">
+            </label>
+            <label>
+              E-mail
+              <input id="authEmail" type="email" placeholder="voce@email.com" autocomplete="email">
+            </label>
+            <label>
+              Senha
+              <input id="authPassword" type="password" placeholder="Senha" autocomplete="current-password">
+            </label>
+          </div>
+          <div class="cloud-actions">
+            <button class="ghost-button" id="connectCloudBtn" type="button">Conectar</button>
+            <button class="ghost-button" id="signInBtn" type="button">Entrar</button>
+            <button class="ghost-button" id="signUpBtn" type="button">Criar conta</button>
+            <button class="ghost-button" id="signOutBtn" type="button">Sair</button>
+            <button class="primary-button" id="syncNowBtn" type="button">Salvar na nuvem</button>
+            <button class="ghost-button" id="loadCloudBtn" type="button">Carregar nuvem</button>
+          </div>
+          <p class="cloud-note">
+            Para Google e Facebook funcionarem, ative os provedores no Supabase e cadastre a URL de retorno do site.
+            <a href="supabase-oauth-setup.html">Ver guia de configuração</a>
+          </p>
+        </section>
+
+        <div class="page-status" aria-live="polite">
+          <div>
+            <p class="eyebrow">Etapa atual</p>
+            <h2 id="currentStepTitle">Dados pessoais</h2>
+          </div>
+          <span id="stepCounter">1 de 6</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <span id="progressBar"></span>
+        </div>
+
+        <form id="resumeForm" class="form-grid">
+          <fieldset class="form-page active" data-page-panel="personal">
+            <legend>Dados pessoais</legend>
+            <label>
+              Nome completo
+              <input name="name" placeholder="Seu nome" autocomplete="name">
+            </label>
+            <label>
+              Cargo desejado
+              <input name="role" placeholder="Analista de suporte, vendedor, desenvolvedor...">
+            </label>
+            <label>
+              Telefone
+              <input name="phone" placeholder="(65) 99999-9999" autocomplete="tel">
+            </label>
+            <label>
+              E-mail
+              <input name="email" placeholder="voce@email.com" autocomplete="email">
+            </label>
+            <label>
+              Cidade/UF
+              <input name="location" placeholder="Cuiaba, MT">
+            </label>
+            <label>
+              LinkedIn ou site
+              <input name="link" placeholder="linkedin.com/in/seunome">
+            </label>
+            <div class="photo-control full">
+              <label>
+                Foto profissional
+                <input id="photoInput" name="photo" type="file" accept="image/*">
+              </label>
+              <div class="photo-actions">
+                <div class="photo-thumb" id="photoThumb">Sem foto</div>
+                <button class="ghost-button" id="removePhotoBtn" type="button">Remover foto</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-page" data-page-panel="profile">
+            <legend>Resumo</legend>
+            <label class="full">
+              Perfil profissional
+              <textarea name="summary" rows="5" placeholder="Profissional com experiencia em..."></textarea>
+            </label>
+            <label class="full">
+              Habilidades
+              <textarea name="skills" rows="4" placeholder="Atendimento ao cliente&#10;Excel intermediario&#10;Redes de computadores"></textarea>
+            </label>
+            <div class="skill-bank full" aria-label="Habilidades prontas">
+              <p>Escolha habilidades prontas ou adicione outras no campo acima.</p>
+              <div class="skill-options" id="skillOptions">
+                <button type="button" data-skill="Atendimento ao cliente">Atendimento ao cliente</button>
+                <button type="button" data-skill="Comunicacao">Comunicacao</button>
+                <button type="button" data-skill="Trabalho em equipe">Trabalho em equipe</button>
+                <button type="button" data-skill="Organizacao">Organizacao</button>
+                <button type="button" data-skill="Excel intermediario">Excel intermediario</button>
+                <button type="button" data-skill="Pacote Office">Pacote Office</button>
+                <button type="button" data-skill="Redes de computadores">Redes de computadores</button>
+                <button type="button" data-skill="Suporte tecnico">Suporte tecnico</button>
+                <button type="button" data-skill="Vendas">Vendas</button>
+                <button type="button" data-skill="Resolucao de problemas">Resolucao de problemas</button>
+                <button type="button" data-skill="Lideranca">Lideranca</button>
+                <button type="button" data-skill="Pontualidade">Pontualidade</button>
+              </div>
+              <div class="custom-skill">
+                <input id="customSkillInput" type="text" placeholder="Digite outra habilidade">
+                <button class="ghost-button" id="addCustomSkillBtn" type="button">Adicionar habilidade</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-page" data-page-panel="experience">
+            <legend>Experiencia</legend>
+            <div class="dynamic-list full" id="experienceList"></div>
+            <button class="ghost-button add-button full" id="addExperienceBtn" type="button">Adicionar experiencia</button>
+          </fieldset>
+
+          <fieldset class="form-page" data-page-panel="education">
+            <legend>Formacao</legend>
+            <div class="dynamic-list full" id="educationList"></div>
+            <button class="ghost-button add-button full" id="addEducationBtn" type="button">Adicionar formacao</button>
+          </fieldset>
+
+          <fieldset class="form-page" data-page-panel="template">
+            <legend>Estilo do curriculo</legend>
+            <div class="template-switch full" role="group" aria-label="Modelo do curriculo">
+              <button class="template-option active" type="button" data-template="classic">
+                <span class="template-preview mini-classic">
+                  <span class="mini-title"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-line"></span>
+                  <span class="mini-section"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-line short"></span>
+                </span>
+                <span>Classico</span>
+              </button>
+              <button class="template-option" type="button" data-template="modern">
+                <span class="template-preview mini-modern">
+                  <span class="mini-band"></span>
+                  <span class="mini-title"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-columns">
+                    <span></span>
+                    <span></span>
+                  </span>
+                </span>
+                <span>Moderno</span>
+              </button>
+              <button class="template-option" type="button" data-template="compact">
+                <span class="template-preview mini-compact">
+                  <span class="mini-title"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-line"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-line short"></span>
+                </span>
+                <span>Compacto</span>
+              </button>
+              <button class="template-option" type="button" data-template="executive">
+                <span class="template-preview mini-executive">
+                  <span class="mini-title centered"></span>
+                  <span class="mini-line centered-line"></span>
+                  <span class="mini-section"></span>
+                  <span class="mini-line wide"></span>
+                  <span class="mini-section"></span>
+                </span>
+                <span>Executivo</span>
+              </button>
+              <button class="template-option photo-model" type="button" data-template="portrait">
+                <span class="template-preview mini-portrait">
+                  <span class="mini-photo"></span>
+                  <span class="mini-title"></span>
+                  <span class="mini-line"></span>
+                  <span class="mini-section"></span>
+                  <span class="mini-line wide"></span>
+                </span>
+                <span>Com foto</span>
+              </button>
+              <button class="template-option photo-model" type="button" data-template="sidebar">
+                <span class="template-preview mini-sidebar">
+                  <span class="mini-side">
+                    <span class="mini-photo square"></span>
+                  </span>
+                  <span class="mini-main">
+                    <span class="mini-title"></span>
+                    <span class="mini-line wide"></span>
+                    <span class="mini-section"></span>
+                    <span class="mini-line"></span>
+                  </span>
+                </span>
+                <span>Foto lateral</span>
+              </button>
+            </div>
+            <div class="style-switch full" role="group" aria-label="Cor do curriculo">
+              <button class="style-option active" type="button" data-style="teal">
+                <span class="style-swatch teal"></span>
+                Verde
+              </button>
+              <button class="style-option" type="button" data-style="blue">
+                <span class="style-swatch blue"></span>
+                Azul
+              </button>
+              <button class="style-option" type="button" data-style="graphite">
+                <span class="style-swatch graphite"></span>
+                Grafite
+              </button>
+              <button class="style-option" type="button" data-style="wine">
+                <span class="style-swatch wine"></span>
+                Vinho
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-page finish-page" data-page-panel="finish">
+            <legend>Conclusao</legend>
+            <div class="finish-box full">
+              <p>Seu curriculo aparece ao lado. Aqui você pode revisar a aparência e só depois escolher como receber o PDF.</p>
+              <div class="finish-actions">
+                <button class="ghost-button" id="finishDownloadBtn" type="button">Baixar PDF</button>
+                <button class="ghost-button" id="finishEmailBtn" type="button">Receber por email</button>
+                <button class="primary-button" id="finishLoginBtn" type="button">Salvar PDF</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+
+        <section class="suggestion-panel" aria-label="Sugestoes para melhorar o curriculo">
+          <div class="suggestion-head">
+            <p class="eyebrow">Sugestoes</p>
+            <h2 id="suggestionTitle">Melhorias para esta etapa</h2>
+          </div>
+          <ul id="suggestionList" class="suggestion-list"></ul>
+        </section>
+
+        <div class="page-controls">
+          <button class="ghost-button" id="prevPageBtn" type="button">Voltar</button>
+          <button class="primary-button" id="nextPageBtn" type="button">Avancar</button>
+        </div>
+        <footer class="site-footer">
+          <span id="saveStatus">Pronto para editar</span>
+          <nav aria-label="Links institucionais">
+            <a href="privacy.html">Privacidade</a>
+            <a href="terms.html">Termos</a>
+          </nav>
+        </footer>
+      </section>
+
+      <aside class="preview-panel" aria-label="Previa do curriculo">
+        <article class="resume-sheet classic" id="resumePreview">
+          <header class="resume-header">
+            <div class="resume-photo-wrap">
+              <img id="resumePhoto" alt="Foto do candidato">
+            </div>
+            <div>
+              <h2 data-output="name">Seu Nome</h2>
+              <p data-output="role">Cargo desejado</p>
+            </div>
+            <ul class="contact-list">
+              <li data-output="phone">(65) 99999-9999</li>
+              <li data-output="email">voce@email.com</li>
+              <li data-output="location">Cuiaba, MT</li>
+              <li data-output="link">linkedin.com/in/seunome</li>
+            </ul>
+          </header>
+
+          <section data-preview-section="summary">
+            <h3>Perfil</h3>
+            <p data-output="summary">Escreva um resumo curto sobre sua experiencia, area de atuacao e principais pontos fortes.</p>
+          </section>
+
+          <section data-preview-section="skills">
+            <h3>Habilidades</h3>
+            <ul class="line-list" data-output-list="skills">
+              <li>Atendimento ao cliente</li>
+              <li>Excel intermediario</li>
+              <li>Redes de computadores</li>
+            </ul>
+          </section>
+
+          <section data-preview-section="experience">
+            <h3>Experiencia</h3>
+            <div class="text-block" data-output-block="experience">
+              <p>Empresa - Cargo - Periodo</p>
+              <p>Descreva suas principais atividades e resultados.</p>
+            </div>
+          </section>
+
+          <section data-preview-section="education">
+            <h3>Formacao</h3>
+            <div class="text-block" data-output-block="education">
+              <p>Curso - Instituicao - Ano</p>
+              <p>Certificacoes relevantes</p>
+            </div>
+          </section>
+        </article>
+      </aside>
+    </main>
+
+    <div class="auth-overlay" id="authOverlay" hidden>
+      <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+        <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Fechar">×</button>
+        <p class="eyebrow">Acesso</p>
+        <h2 id="authModalTitle">Crie uma conta para liberar o PDF</h2>
+        <p class="auth-copy">Antes de gerar o arquivo final, entre com uma conta para salvar seu curriculo e continuar depois.</p>
+        <div class="auth-social">
+          <button class="social-button google" id="googleAuthBtn" type="button">Continuar com Google</button>
+          <button class="social-button facebook" id="facebookAuthBtn" type="button">Continuar com Facebook</button>
+        </div>
+        <div class="auth-divider"><span>ou</span></div>
+        <div class="auth-grid">
+          <label>
+            E-mail
+            <input id="modalAuthEmail" type="email" placeholder="voce@email.com" autocomplete="email">
+          </label>
+          <label>
+            Senha
+            <input id="modalAuthPassword" type="password" placeholder="Senha" autocomplete="current-password">
+          </label>
+        </div>
+        <div class="auth-actions">
+          <button class="ghost-button" id="modalSignInBtn" type="button">Entrar</button>
+          <button class="ghost-button" id="modalSignUpBtn" type="button">Criar conta</button>
+          <button class="primary-button" id="modalContinueBtn" type="button">Continuar para PDF</button>
+        </div>
+        <p class="auth-status" id="authModalState">Entre ou crie sua conta para seguir.</p>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

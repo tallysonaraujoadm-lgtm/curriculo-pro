@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guia OAuth | Curriculo Pro</title>
+    <meta name="description" content="Como configurar login Google e Facebook no Supabase para o Curriculo Pro.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f8;
+        color: #17202a;
+        line-height: 1.6;
+      }
+      main {
+        width: min(980px, calc(100% - 32px));
+        margin: 32px auto;
+        background: #fff;
+        border: 1px solid #d8dee8;
+        border-radius: 8px;
+        padding: 28px;
+      }
+      h1, h2 {
+        line-height: 1.2;
+      }
+      a {
+        color: #166c7d;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      code, pre {
+        background: #eef4f6;
+        border-radius: 6px;
+      }
+      pre {
+        padding: 14px;
+        overflow: auto;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      ul {
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="index.html">Voltar ao Curriculo Pro</a></p>
+      <h1>Configurar login Google e Facebook no Supabase</h1>
+      <p>Use este guia para habilitar o login social no projeto. O site já está preparado para usar os provedores, mas eles precisam estar ativos no Supabase.</p>
+
+      <h2>1. Criar o projeto</h2>
+      <ol>
+        <li>Crie um projeto no Supabase.</li>
+        <li>Copie a URL do projeto e a chave <code>anon</code>.</li>
+        <li>Abra o site do Curriculo Pro e cole essas informações no painel <strong>Conta</strong>.</li>
+      </ol>
+
+      <h2>2. Habilitar o Google</h2>
+      <ol>
+        <li>No Supabase, vá em <strong>Authentication</strong> e depois <strong>Providers</strong>.</li>
+        <li>Ative <strong>Google</strong>.</li>
+        <li>Adicione o <code>Client ID</code> e o <code>Client Secret</code> do Google Cloud.</li>
+        <li>Cadastre a URL de retorno autorizada do seu site.</li>
+      </ol>
+
+      <h2>3. Habilitar o Facebook</h2>
+      <ol>
+        <li>Em <strong>Providers</strong>, ative <strong>Facebook</strong>.</li>
+        <li>Adicione o <code>App ID</code> e o <code>App Secret</code> do Meta for Developers.</li>
+        <li>Cadastre a mesma URL de retorno usada no site.</li>
+      </ol>
+
+      <h2>4. Banco de dados</h2>
+      <p>Abra o arquivo <a href="supabase-schema.sql">supabase-schema.sql</a> e execute no SQL Editor do Supabase para criar a tabela de curriculos.</p>
+
+      <h2>5. URLs comuns</h2>
+      <ul>
+        <li>Site local: <code>http://localhost:xxxx</code></li>
+        <li>Site publicado: use a URL final do deploy, por exemplo GitHub Pages, Netlify ou Vercel.</li>
+      </ul>
+
+      <h2>6. Fluxo esperado</h2>
+      <ul>
+        <li>A pessoa monta o curriculo.</li>
+        <li>Ao pedir PDF, o modal de acesso aparece.</li>
+        <li>Depois de entrar com Google, Facebook ou e-mail, o PDF é liberado.</li>
+      </ul>
+    </main>
+  </body>
+</html>
