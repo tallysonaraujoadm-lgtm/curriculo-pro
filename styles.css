@@ -35,6 +35,10 @@ button {
   cursor: pointer;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .app-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -156,6 +160,15 @@ h1 {
 
 .cloud-actions button {
   min-height: 38px;
+}
+
+.cloud-settings {
+  display: grid;
+  gap: 12px;
+}
+
+#cloudToggleBtn {
+  justify-self: start;
 }
 
 .cloud-note {
@@ -1158,12 +1171,15 @@ body.status-dirty #saveStatus::before {
   place-items: center;
   background: rgba(23, 32, 42, 0.56);
   padding: 18px;
+  overflow-y: auto;
   z-index: 50;
 }
 
 .auth-modal {
   position: relative;
   width: min(100%, 560px);
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
   background: #fff;
   border-radius: 10px;
   border: 1px solid var(--line);
@@ -1275,6 +1291,16 @@ body.status-dirty #saveStatus::before {
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.delivery-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.delivery-actions button {
+  min-height: 46px;
 }
 
 @media print {

@@ -24,20 +24,9 @@ const currentStepTitle = document.querySelector("#currentStepTitle");
 const stepCounter = document.querySelector("#stepCounter");
 const progressBar = document.querySelector("#progressBar");
 const saveStatus = document.querySelector("#saveStatus");
-const cloudTitle = document.querySelector("#cloudTitle");
-const cloudUserLabel = document.querySelector("#cloudUser");
-const cloudState = document.querySelector("#cloudState");
-const supabaseUrlInput = document.querySelector("#supabaseUrl");
-const supabaseKeyInput = document.querySelector("#supabaseKey");
-const authEmailInput = document.querySelector("#authEmail");
-const authPasswordInput = document.querySelector("#authPassword");
-const connectCloudBtn = document.querySelector("#connectCloudBtn");
-const signInBtn = document.querySelector("#signInBtn");
-const signUpBtn = document.querySelector("#signUpBtn");
-const signOutBtn = document.querySelector("#signOutBtn");
-const syncNowBtn = document.querySelector("#syncNowBtn");
-const loadCloudBtn = document.querySelector("#loadCloudBtn");
 const authOverlay = document.querySelector("#authOverlay");
+const authStep = document.querySelector("#authStep");
+const deliveryStep = document.querySelector("#deliveryStep");
 const closeAuthModalBtn = document.querySelector("#closeAuthModalBtn");
 const googleAuthBtn = document.querySelector("#googleAuthBtn");
 const facebookAuthBtn = document.querySelector("#facebookAuthBtn");
@@ -45,15 +34,17 @@ const modalAuthEmail = document.querySelector("#modalAuthEmail");
 const modalAuthPassword = document.querySelector("#modalAuthPassword");
 const modalSignInBtn = document.querySelector("#modalSignInBtn");
 const modalSignUpBtn = document.querySelector("#modalSignUpBtn");
-const modalContinueBtn = document.querySelector("#modalContinueBtn");
+const modalDownloadBtn = document.querySelector("#modalDownloadBtn");
+const modalEmailBtn = document.querySelector("#modalEmailBtn");
 const authModalState = document.querySelector("#authModalState");
+const deliveryState = document.querySelector("#deliveryState");
 const prevPageBtn = document.querySelector("#prevPageBtn");
 const nextPageBtn = document.querySelector("#nextPageBtn");
 const finishLoginBtn = document.querySelector("#finishLoginBtn");
-const finishDownloadBtn = document.querySelector("#finishDownloadBtn");
-const finishEmailBtn = document.querySelector("#finishEmailBtn");
 const storageKey = "curriculo-pro-data";
 const cloudConfigKey = "curriculo-pro-cloud";
+const supabaseUrl = "https://gzgsjodcbraglevopvjk.supabase.co";
+const supabasePublicKey = "sb_publishable_RdwtaCaqPsrmLCnxgiV6Dw_-mSksim5";
 const templates = ["classic", "modern", "compact", "executive", "portrait", "sidebar"];
 const photoTemplates = ["portrait", "sidebar"];
 
@@ -72,12 +63,14 @@ let photoData = "";
 let cloudClient = null;
 let cloudSession = null;
 let cloudUser = null;
-let cloudSyncTimer = null;
 let cloudAuthListenerAttached = false;
-let pendingPdfAction = false;
-let pendingPostAuthAction = null;
 const pendingPdfKey = "curriculo-pro-pending-pdf";
 const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+function isOauthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  return params.has("code") || params.has("error") || params.has("access_token") || params.has("id_token");
+}
 
 const defaults = {
   name: "Seu Nome",
@@ -710,7 +703,6 @@ function saveAndRender() {
   localStorage.setItem(storageKey, JSON.stringify(data));
   setSaveStatus("Alteracoes salvas", false);
   render(data);
-  queueCloudSync();
 }
 
 function setSaveStatus(text, dirty) {
@@ -720,11 +712,11 @@ function setSaveStatus(text, dirty) {
 }
 
 function setCloudState(text) {
-  if (cloudState) cloudState.textContent = text;
+  if (authModalState) authModalState.textContent = text;
 }
 
 function setCloudUserLabel(text) {
-  if (cloudUserLabel) cloudUserLabel.textContent = text;
+  return text;
 }
 
 function setAuthModalState(text) {
@@ -734,18 +726,26 @@ function setAuthModalState(text) {
 function openAuthModal() {
   if (!authOverlay) return;
   authOverlay.hidden = false;
-  setAuthModalState(cloudReady() ? "Entre na conta para liberar o PDF." : "Conecte o projeto primeiro e depois entre com a conta.");
-  if (authEmailInput?.value && !modalAuthEmail.value) modalAuthEmail.value = authEmailInput.value;
+  if (cloudReady()) {
+    showDeliveryOptions();
+    return;
+  }
+  authStep.hidden = false;
+  deliveryStep.hidden = true;
+  setAuthModalState(cloudClient ? "Entre ou crie sua conta para seguir." : "A autenticação ainda não foi configurada.");
   modalAuthPassword.value = "";
   modalAuthEmail.focus();
+}
+
+function showDeliveryOptions() {
+  authStep.hidden = true;
+  deliveryStep.hidden = false;
+  deliveryState.textContent = cloudUser?.email ? `Conta: ${cloudUser.email}` : "";
 }
 
 function closeAuthModal() {
   if (!authOverlay) return;
   authOverlay.hidden = true;
-  pendingPdfAction = false;
-  sessionStorage.removeItem(pendingPdfKey);
-  pendingPostAuthAction = null;
 }
 
 function getCloudConfig() {
@@ -760,29 +760,24 @@ function saveCloudConfig(config) {
   localStorage.setItem(cloudConfigKey, JSON.stringify(config));
 }
 
-function applyCloudConfig() {
-  const config = getCloudConfig();
-  if (config.url) supabaseUrlInput.value = config.url;
-  if (config.key) supabaseKeyInput.value = config.key;
-  if (config.email) authEmailInput.value = config.email;
-}
-
 function initCloudClient() {
-  const config = getCloudConfig();
-  if (!config.url || !config.key || !window.supabase?.createClient) {
+  const savedConfig = getCloudConfig();
+  const config = {
+    url: supabaseUrl,
+    key: supabasePublicKey || savedConfig.key
+  };
+  if (!config.key || !window.supabase?.createClient) {
     cloudClient = null;
     cloudSession = null;
     cloudUser = null;
     cloudAuthListenerAttached = false;
     setCloudState("Offline");
     setCloudUserLabel("Nenhuma conta conectada");
-    cloudTitle.textContent = "Salvar na nuvem";
     return;
   }
 
   cloudClient = window.supabase.createClient(config.url, config.key);
   cloudAuthListenerAttached = false;
-  cloudTitle.textContent = "Conta conectada";
   setCloudState(cloudSession ? `Online: ${cloudUser?.email || "logado"}` : "Conectado");
   setCloudUserLabel(cloudSession?.user?.email ? `Conta: ${cloudSession.user.email}` : "Nenhuma conta conectada");
 
@@ -800,9 +795,6 @@ function initCloudClient() {
       cloudUser = session?.user || null;
       setCloudState(cloudSession ? `Online: ${cloudUser?.email || "logado"}` : "Conectado");
       setCloudUserLabel(cloudUser?.email ? `Conta: ${cloudUser.email}` : "Nenhuma conta conectada");
-      if (cloudSession) {
-        loadFromCloud().catch(() => {});
-      }
       resumePendingPdfIfReady();
     });
     cloudAuthListenerAttached = true;
@@ -813,76 +805,22 @@ function cloudReady() {
   return Boolean(cloudClient && cloudSession?.user?.id);
 }
 
-async function getAuthenticatedUser() {
-  if (!cloudClient) return null;
-
-  const { data, error } = await cloudClient.auth.getUser();
-  if (error || !data?.user) return null;
-  return data.user;
-}
-
-function queueCloudSync() {
-  if (!cloudReady()) return;
-  clearTimeout(cloudSyncTimer);
-  cloudSyncTimer = window.setTimeout(() => {
-    syncToCloud().catch(() => {});
-  }, 700);
-}
-
 function resumePendingPdfIfReady() {
-  const action = sessionStorage.getItem(pendingPdfKey);
-  const pending = action === "print" || action === "email";
+  const pending = sessionStorage.getItem(pendingPdfKey) === "choose-delivery";
   if (!pending || !cloudReady() || !cloudSession) return false;
-
   sessionStorage.removeItem(pendingPdfKey);
-  pendingPdfAction = false;
-  const actionType = pendingPostAuthAction || action || "print";
-  pendingPostAuthAction = null;
-  closeAuthModal();
-  if (actionType === "email") {
-    sendResumeByEmail();
-    return true;
-  }
-
-  window.setTimeout(() => window.print(), 100);
+  authOverlay.hidden = false;
+  showDeliveryOptions();
   return true;
-}
-
-function setPendingAction(action) {
-  pendingPostAuthAction = action;
-  pendingPdfAction = true;
-  sessionStorage.setItem(pendingPdfKey, action);
-}
-
-async function syncToCloud() {
-  const user = await getAuthenticatedUser();
-  if (!user) {
-    setCloudState("Entre na conta para salvar");
-    return;
-  }
-  const data = getFormData();
-  const payload = {
-    user_id: user.id,
-    title: data.name?.trim() || "Curriculo",
-    payload: data,
-    updated_at: new Date().toISOString()
-  };
-
-  const { error } = await cloudClient
-    .from("resumes")
-    .upsert(payload, { onConflict: "user_id" });
-
-  if (error) {
-    setCloudState(`Erro ao salvar: ${error.message}`);
-    return;
-  }
-
-  setCloudState("Sincronizado na nuvem");
 }
 
 async function signInWithPassword(email, password) {
   if (!cloudClient) {
-    setCloudState("Conecte o projeto primeiro");
+    setAuthModalState("A autenticação ainda não foi configurada.");
+    return false;
+  }
+  if (!email || !password) {
+    setAuthModalState("Informe seu e-mail e sua senha.");
     return false;
   }
 
@@ -894,16 +832,21 @@ async function signInWithPassword(email, password) {
   }
 
   saveCloudConfig({ ...getCloudConfig(), email });
-  authEmailInput.value = email;
   setCloudState("Login realizado");
   setAuthModalState("Login realizado");
-  resumePendingPdfIfReady();
+  cloudSession = result.data.session || cloudSession;
+  cloudUser = result.data.user || cloudSession?.user || cloudUser;
+  showDeliveryOptions();
   return true;
 }
 
 async function signUpWithPassword(email, password) {
   if (!cloudClient) {
-    setCloudState("Conecte o projeto primeiro");
+    setAuthModalState("A autenticação ainda não foi configurada.");
+    return false;
+  }
+  if (!email || !password) {
+    setAuthModalState("Informe seu e-mail e crie uma senha.");
     return false;
   }
 
@@ -915,16 +858,20 @@ async function signUpWithPassword(email, password) {
   }
 
   saveCloudConfig({ ...getCloudConfig(), email });
-  authEmailInput.value = email;
   setCloudState("Conta criada");
-  setAuthModalState("Conta criada. Verifique o e-mail se necessário.");
-  resumePendingPdfIfReady();
+  cloudSession = result.data.session || cloudSession;
+  cloudUser = result.data.user || cloudSession?.user || cloudUser;
+  if (cloudSession) {
+    showDeliveryOptions();
+  } else {
+    setAuthModalState("Conta criada. Confirme o e-mail e depois faça login.");
+  }
   return true;
 }
 
 async function signInWithProvider(provider) {
   if (!cloudClient) {
-    setCloudState("Conecte o projeto primeiro");
+    setAuthModalState("A autenticação ainda não foi configurada.");
     return false;
   }
 
@@ -940,25 +887,13 @@ async function signInWithProvider(provider) {
     return false;
   }
 
-  sessionStorage.setItem(pendingPdfKey, pendingPostAuthAction || "print");
+  sessionStorage.setItem(pendingPdfKey, "choose-delivery");
   setAuthModalState(`Abrindo ${provider}...`);
   return true;
 }
 
 async function handlePdfAccess() {
-  if (cloudReady()) {
-    if (cloudSession) {
-      closeAuthModal();
-      pendingPdfAction = false;
-      pendingPostAuthAction = null;
-      window.setTimeout(() => window.print(), 100);
-      return;
-    }
-  }
-
-  pendingPdfAction = true;
-  pendingPostAuthAction = "print";
-  sessionStorage.setItem(pendingPdfKey, "print");
+  sessionStorage.setItem(pendingPdfKey, "choose-delivery");
   openAuthModal();
 }
 
@@ -973,7 +908,7 @@ function getResumeFileName() {
 }
 
 function sendResumeByEmail() {
-  const recipient = (authEmailInput.value || modalAuthEmail.value || "").trim();
+  const recipient = (cloudUser?.email || modalAuthEmail.value || "").trim();
   if (!recipient) {
     setAuthModalState("Informe um e-mail para receber o material.");
     return;
@@ -990,34 +925,6 @@ function sendResumeByEmail() {
   );
 
   window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-}
-
-async function loadFromCloud() {
-  const user = await getAuthenticatedUser();
-  if (!user) {
-    setCloudState("Entre na conta para carregar");
-    return;
-  }
-
-  const { data, error } = await cloudClient
-    .from("resumes")
-    .select("payload")
-    .eq("user_id", user.id)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    setCloudState(`Erro ao carregar: ${error.message}`);
-    return;
-  }
-
-  if (data?.payload) {
-    hydrateForm(data.payload);
-    setCloudState("Curriculo carregado da nuvem");
-  } else {
-    setCloudState("Nenhum curriculo na nuvem");
-  }
 }
 
 function hydrateForm(data) {
@@ -1105,6 +1012,14 @@ function loadSavedData() {
 
   hydrateForm(data);
   setSaveStatus("Pronto para editar", false);
+}
+
+if (authOverlay) {
+  authOverlay.hidden = true;
+}
+
+if (!isOauthCallback()) {
+  sessionStorage.removeItem(pendingPdfKey);
 }
 
 form.addEventListener("input", saveAndRender);
@@ -1224,31 +1139,25 @@ function printResume() {
   handlePdfAccess().catch(() => {});
 }
 
-printBtn.addEventListener("click", printResume);
+printBtn.addEventListener("click", () => {
+  currentPage = "finish";
+  updatePageUi();
+  saveAndRender();
+});
 if (finishPrintBtn) {
   finishPrintBtn.addEventListener("click", () => {
-    setPendingAction("print");
-    printResume();
+    currentPage = "finish";
+    updatePageUi();
+    saveAndRender();
+    handlePdfAccess().catch(() => {});
   });
 }
 
 finishLoginBtn.addEventListener("click", () => {
-  setPendingAction("print");
-  printResume();
-});
-
-finishDownloadBtn.addEventListener("click", () => {
   currentPage = "finish";
   updatePageUi();
   saveAndRender();
-  window.setTimeout(() => window.print(), 100);
-});
-
-finishEmailBtn.addEventListener("click", () => {
-  pendingPostAuthAction = "email";
-  pendingPdfAction = false;
-  sessionStorage.setItem(pendingPdfKey, "email");
-  openAuthModal();
+  handlePdfAccess().catch(() => {});
 });
 
 closeAuthModalBtn.addEventListener("click", closeAuthModal);
@@ -1271,31 +1180,20 @@ facebookAuthBtn.addEventListener("click", () => {
 });
 
 modalSignInBtn.addEventListener("click", () => {
-  signInWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value).then((ok) => {
-    if (ok && pendingPdfAction) {
-      closeAuthModal();
-      window.setTimeout(() => window.print(), 100);
-    }
-  });
+  signInWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value);
 });
 
 modalSignUpBtn.addEventListener("click", () => {
-  signUpWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value).then((ok) => {
-    if (ok && pendingPdfAction) {
-      closeAuthModal();
-      window.setTimeout(() => window.print(), 100);
-    }
-  });
+  signUpWithPassword(modalAuthEmail.value.trim(), modalAuthPassword.value);
 });
 
-modalContinueBtn.addEventListener("click", async () => {
-  if (cloudReady() && cloudSession) {
-    closeAuthModal();
-    resumePendingPdfIfReady();
-    return;
-  }
+modalDownloadBtn.addEventListener("click", () => {
+  closeAuthModal();
+  window.setTimeout(() => window.print(), 100);
+});
 
-  setAuthModalState("Entre com uma conta para continuar.");
+modalEmailBtn.addEventListener("click", () => {
+  sendResumeByEmail();
 });
 
 clearBtn.addEventListener("click", () => {
@@ -1314,99 +1212,5 @@ clearBtn.addEventListener("click", () => {
   setSaveStatus("Pronto para editar", false);
 });
 
-connectCloudBtn.addEventListener("click", async () => {
-  const url = supabaseUrlInput.value.trim();
-  const key = supabaseKeyInput.value.trim();
-  const email = authEmailInput.value.trim();
-
-  if (!url || !key) {
-    setCloudState("Informe URL e chave anon");
-    return;
-  }
-
-  saveCloudConfig({ url, key, email });
-  initCloudClient();
-  setCloudState("Conexao configurada");
-});
-
-signInBtn.addEventListener("click", async () => {
-  if (!cloudClient) {
-    setCloudState("Conecte o projeto primeiro");
-    return;
-  }
-
-  const email = authEmailInput.value.trim();
-  const password = authPasswordInput.value;
-
-  if (!email || !password) {
-    setCloudState("Informe e-mail e senha");
-    return;
-  }
-
-  const { error } = await cloudClient.auth.signInWithPassword({ email, password });
-  if (error) {
-    setCloudState(`Erro no login: ${error.message}`);
-    return;
-  }
-
-  saveCloudConfig({ ...getCloudConfig(), email });
-  setCloudState("Login realizado");
-});
-
-signUpBtn.addEventListener("click", async () => {
-  if (!cloudClient) {
-    setCloudState("Conecte o projeto primeiro");
-    return;
-  }
-
-  const email = authEmailInput.value.trim();
-  const password = authPasswordInput.value;
-
-  if (!email || !password) {
-    setCloudState("Informe e-mail e senha");
-    return;
-  }
-
-  const { error } = await cloudClient.auth.signUp({ email, password });
-  if (error) {
-    setCloudState(`Erro ao criar conta: ${error.message}`);
-    return;
-  }
-
-  saveCloudConfig({ ...getCloudConfig(), email });
-  setCloudState("Conta criada. Confirme o e-mail se o provedor exigir.");
-});
-
-signOutBtn.addEventListener("click", async () => {
-  if (!cloudClient) {
-    setCloudState("Offline");
-    return;
-  }
-
-  await cloudClient.auth.signOut();
-  cloudSession = null;
-  cloudUser = null;
-  setCloudState("Desconectado");
-});
-
-syncNowBtn.addEventListener("click", async () => {
-  if (!cloudReady()) {
-    setCloudState("Entre na conta para salvar");
-    return;
-  }
-
-  await syncToCloud();
-});
-
-loadCloudBtn.addEventListener("click", async () => {
-  if (!cloudReady()) {
-    setCloudState("Entre na conta para carregar");
-    return;
-  }
-
-  await loadFromCloud();
-});
-
 loadSavedData();
-applyCloudConfig();
 initCloudClient();

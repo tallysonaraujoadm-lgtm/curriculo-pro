@@ -39,47 +39,6 @@
           </div>
         </header>
 
-        <section class="cloud-panel" aria-label="Conta e sincronizacao">
-          <div class="cloud-head">
-            <div>
-              <p class="eyebrow">Conta</p>
-              <h2 id="cloudTitle">Salvar na nuvem</h2>
-              <p id="cloudUser">Nenhuma conta conectada</p>
-            </div>
-            <span id="cloudState">Offline</span>
-          </div>
-          <div class="cloud-grid">
-            <label>
-              URL do projeto
-              <input id="supabaseUrl" type="url" placeholder="https://seu-projeto.supabase.co">
-            </label>
-            <label>
-              Chave anon
-              <input id="supabaseKey" type="password" placeholder="sua chave anon">
-            </label>
-            <label>
-              E-mail
-              <input id="authEmail" type="email" placeholder="voce@email.com" autocomplete="email">
-            </label>
-            <label>
-              Senha
-              <input id="authPassword" type="password" placeholder="Senha" autocomplete="current-password">
-            </label>
-          </div>
-          <div class="cloud-actions">
-            <button class="ghost-button" id="connectCloudBtn" type="button">Conectar</button>
-            <button class="ghost-button" id="signInBtn" type="button">Entrar</button>
-            <button class="ghost-button" id="signUpBtn" type="button">Criar conta</button>
-            <button class="ghost-button" id="signOutBtn" type="button">Sair</button>
-            <button class="primary-button" id="syncNowBtn" type="button">Salvar na nuvem</button>
-            <button class="ghost-button" id="loadCloudBtn" type="button">Carregar nuvem</button>
-          </div>
-          <p class="cloud-note">
-            Para Google e Facebook funcionarem, ative os provedores no Supabase e cadastre a URL de retorno do site.
-            <a href="supabase-oauth-setup.html">Ver guia de configuração</a>
-          </p>
-        </section>
-
         <div class="page-status" aria-live="polite">
           <div>
             <p class="eyebrow">Etapa atual</p>
@@ -270,11 +229,9 @@
           <fieldset class="form-page finish-page" data-page-panel="finish">
             <legend>Conclusao</legend>
             <div class="finish-box full">
-              <p>Seu curriculo aparece ao lado. Aqui você pode revisar a aparência e só depois escolher como receber o PDF.</p>
+              <p>Seu curriculo aparece ao lado. Revise a aparência e continue para entrar ou criar sua conta.</p>
               <div class="finish-actions">
-                <button class="ghost-button" id="finishDownloadBtn" type="button">Baixar PDF</button>
-                <button class="ghost-button" id="finishEmailBtn" type="button">Receber por email</button>
-                <button class="primary-button" id="finishLoginBtn" type="button">Salvar PDF</button>
+                <button class="primary-button" id="finishLoginBtn" type="button">Continuar</button>
               </div>
             </div>
           </fieldset>
@@ -356,29 +313,39 @@
       <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
         <button class="modal-close" id="closeAuthModalBtn" type="button" aria-label="Fechar">×</button>
         <p class="eyebrow">Acesso</p>
-        <h2 id="authModalTitle">Crie uma conta para liberar o PDF</h2>
-        <p class="auth-copy">Antes de gerar o arquivo final, entre com uma conta para salvar seu curriculo e continuar depois.</p>
-        <div class="auth-social">
-          <button class="social-button google" id="googleAuthBtn" type="button">Continuar com Google</button>
-          <button class="social-button facebook" id="facebookAuthBtn" type="button">Continuar com Facebook</button>
+        <div id="authStep">
+          <h2 id="authModalTitle">Entre para liberar seu curriculo</h2>
+          <p class="auth-copy">Faça login ou crie uma conta para escolher como deseja receber o arquivo.</p>
+          <div class="auth-social">
+            <button class="social-button google" id="googleAuthBtn" type="button">Continuar com Google</button>
+            <button class="social-button facebook" id="facebookAuthBtn" type="button">Continuar com Facebook</button>
+          </div>
+          <div class="auth-divider"><span>ou</span></div>
+          <div class="auth-grid">
+            <label>
+              E-mail
+              <input id="modalAuthEmail" type="email" placeholder="voce@email.com" autocomplete="email">
+            </label>
+            <label>
+              Senha
+              <input id="modalAuthPassword" type="password" placeholder="Senha" autocomplete="current-password">
+            </label>
+          </div>
+          <div class="auth-actions">
+            <button class="ghost-button" id="modalSignInBtn" type="button">Entrar</button>
+            <button class="primary-button" id="modalSignUpBtn" type="button">Criar conta</button>
+          </div>
+          <p class="auth-status" id="authModalState">Entre ou crie sua conta para seguir.</p>
         </div>
-        <div class="auth-divider"><span>ou</span></div>
-        <div class="auth-grid">
-          <label>
-            E-mail
-            <input id="modalAuthEmail" type="email" placeholder="voce@email.com" autocomplete="email">
-          </label>
-          <label>
-            Senha
-            <input id="modalAuthPassword" type="password" placeholder="Senha" autocomplete="current-password">
-          </label>
+        <div class="delivery-step" id="deliveryStep" hidden>
+          <h2>Como deseja receber?</h2>
+          <p class="auth-copy">Sua conta está conectada. Escolha uma opção para continuar.</p>
+          <div class="delivery-actions">
+            <button class="primary-button" id="modalDownloadBtn" type="button">Baixar PDF</button>
+            <button class="ghost-button" id="modalEmailBtn" type="button">Enviar para o e-mail</button>
+          </div>
+          <p class="auth-status" id="deliveryState"></p>
         </div>
-        <div class="auth-actions">
-          <button class="ghost-button" id="modalSignInBtn" type="button">Entrar</button>
-          <button class="ghost-button" id="modalSignUpBtn" type="button">Criar conta</button>
-          <button class="primary-button" id="modalContinueBtn" type="button">Continuar para PDF</button>
-        </div>
-        <p class="auth-status" id="authModalState">Entre ou crie sua conta para seguir.</p>
       </div>
     </div>
 
