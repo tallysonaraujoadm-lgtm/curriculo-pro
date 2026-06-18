@@ -937,6 +937,7 @@ printBtn.addEventListener("click", () => {
   currentPage = "finish";
   updatePageUi();
   saveAndRender();
+  openDeliveryModal();
 });
 finishDeliveryBtn.addEventListener("click", () => {
   currentPage = "finish";
@@ -958,7 +959,7 @@ document.addEventListener("keydown", (event) => {
 
 modalDownloadBtn.addEventListener("click", () => {
   closeDeliveryModal();
-  window.setTimeout(() => window.print(), 100);
+  window.print();
 });
 
 modalEmailBtn.addEventListener("click", () => {
