@@ -3577,6 +3577,155 @@ body.editor-open .resume-sheet.is-empty::after {
   transform: translateX(-50%);
 }
 
+/* Editor em duas colunas, mantendo os componentes e a identidade do projeto. */
+body.editor-open {
+  --editor-blue: #2878e3;
+  --editor-blue-dark: #1761bd;
+  background: #f2f4f7;
+}
+
+body.editor-open .app-shell {
+  grid-template-columns: minmax(520px, 48%) minmax(520px, 52%);
+  background: #f2f4f7;
+}
+
+body.editor-open .editor-panel,
+body.editor-open.is-finished .editor-panel {
+  padding: 0 clamp(30px, 4vw, 64px) 36px;
+  background: #fff;
+  border-right: 1px solid #e1e5eb;
+  box-shadow: 6px 0 22px rgba(16, 24, 40, 0.04);
+}
+
+body.editor-open .topbar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  min-height: 76px;
+  margin: 0 -12px 30px;
+  padding: 16px 12px;
+  border-bottom: 1px solid #e5e9ef;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+body.editor-open .topbar h1 {
+  color: #182230;
+  font-size: 1.18rem;
+}
+
+body.editor-open .topbar .eyebrow,
+body.editor-open .eyebrow,
+.preview-toolbar p {
+  color: var(--editor-blue);
+}
+
+body.editor-open .page-status {
+  margin-bottom: 14px;
+}
+
+body.editor-open .page-status h2 {
+  color: #17202e;
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+}
+
+body.editor-open #stepCounter {
+  background: #eaf2fd;
+  color: var(--editor-blue-dark);
+}
+
+body.editor-open .progress-track span {
+  background: var(--editor-blue);
+}
+
+.editor-steps button.active,
+.editor-steps button.completed {
+  color: var(--editor-blue-dark);
+}
+
+.editor-steps button.active span {
+  border-color: var(--editor-blue);
+  box-shadow: 0 0 0 5px #eaf2fd;
+}
+
+.editor-steps button.completed span {
+  border-color: var(--editor-blue);
+  background: var(--editor-blue);
+}
+
+.editor-steps button.completed::before,
+.editor-steps button.active::before {
+  background: #84b5f3;
+}
+
+body.editor-open fieldset {
+  border: 1px solid #e1e6ed;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.04);
+  padding: 24px;
+}
+
+body.editor-open legend {
+  color: #344054;
+}
+
+body.editor-open input:focus,
+body.editor-open select:focus,
+body.editor-open textarea:focus {
+  border-color: var(--editor-blue);
+  box-shadow: 0 0 0 4px rgba(40, 120, 227, 0.11);
+}
+
+body.editor-open .primary-button {
+  background: var(--editor-blue);
+  box-shadow: 0 6px 16px rgba(40, 120, 227, 0.2);
+}
+
+body.editor-open .primary-button:hover {
+  background: var(--editor-blue-dark);
+}
+
+body.editor-open .suggestion-panel {
+  border: 1px solid #dce7f6;
+  background: #f6f9fe;
+}
+
+body.editor-open .suggestion-list li {
+  border-left-color: var(--editor-blue);
+}
+
+body.editor-open .preview-panel,
+body.editor-open.is-finished .preview-panel {
+  padding-top: 22px;
+  background: #eef1f5;
+}
+
+.preview-toolbar {
+  width: min(100%, 760px);
+}
+
+.preview-toolbar > span {
+  border-color: #d8dde5;
+  background: #fff;
+}
+
+body.editor-open .resume-sheet {
+  width: min(100%, 760px);
+  box-shadow: 0 18px 48px rgba(16, 24, 40, 0.16);
+}
+
+body.editor-open .page-controls {
+  position: sticky;
+  z-index: 15;
+  bottom: 0;
+  margin: 24px -12px 0;
+  padding: 16px 12px;
+  border-top: 1px solid #e5e9ef;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+}
+
 @media (max-width: 1120px) {
   body.editor-open .app-shell {
     grid-template-columns: minmax(470px, 1fr) minmax(430px, 0.9fr);

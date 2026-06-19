@@ -26,7 +26,6 @@ const saveStatus = document.querySelector("#saveStatus");
 const deliveryOverlay = document.querySelector("#deliveryOverlay");
 const closeDeliveryModalBtn = document.querySelector("#closeDeliveryModalBtn");
 const modalDownloadBtn = document.querySelector("#modalDownloadBtn");
-const modalEmailBtn = document.querySelector("#modalEmailBtn");
 const deliveryState = document.querySelector("#deliveryState");
 const prevPageBtn = document.querySelector("#prevPageBtn");
 const nextPageBtn = document.querySelector("#nextPageBtn");
@@ -319,7 +318,7 @@ function composeEducation(items) {
     .join("\n");
 }
 
-export function getFormData() {
+function getFormData() {
   const experiences = getExperiences();
   const educations = getEducations();
   const template = templates.find((name) => preview.classList.contains(name)) || "classic";
@@ -857,83 +856,7 @@ function closeDeliveryModal() {
   deliveryOverlay.hidden = true;
 }
 
-function getResumeFileName() {
-  const name = (fieldValue("name") || "curriculo")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9_-]/g, "");
-
-  return `${name || "curriculo"}.pdf`;
-}
-
-async function createResumePdf() {
-  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-    import("html2canvas"),
-    import("jspdf")
-  ]);
-
-  const canvas = await html2canvas(preview, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false
-  });
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4",
-    compress: true
-  });
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const imageHeight = canvas.height * pageWidth / canvas.width;
-  const image = canvas.toDataURL("image/jpeg", 0.94);
-
-  let remainingHeight = imageHeight;
-  let position = 0;
-  pdf.addImage(image, "JPEG", 0, position, pageWidth, imageHeight, undefined, "FAST");
-  remainingHeight -= pageHeight;
-
-  while (remainingHeight > 0) {
-    position = remainingHeight - imageHeight;
-    pdf.addPage();
-    pdf.addImage(image, "JPEG", 0, position, pageWidth, imageHeight, undefined, "FAST");
-    remainingHeight -= pageHeight;
-  }
-
-  return pdf;
-}
-
-async function sendResumeByEmail() {
-  deliveryState.textContent = "Gerando e enviando o PDF...";
-  modalEmailBtn.disabled = true;
-
-  try {
-    const pdf = await createResumePdf();
-    const pdfBase64 = pdf.output("datauristring").split(",")[1];
-    const response = await fetch("/api/send-resume", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fileName: getResumeFileName(),
-        pdfBase64
-      })
-    });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(body.error || "Não foi possível enviar o currículo.");
-    }
-    deliveryState.textContent = "Currículo enviado para o e-mail da sua conta.";
-  } catch (error) {
-    deliveryState.textContent = error.message || "Não foi possível enviar o currículo.";
-  } finally {
-    modalEmailBtn.disabled = false;
-  }
-}
-
-export function hydrateForm(data) {
+function hydrateForm(data) {
   ["name", "role", "phone", "email", "location", "link", "summary", "skills"].forEach((key) => {
     const field = form.elements[key];
     if (field) field.value = data[key] || "";
@@ -1018,12 +941,12 @@ function loadInitialData() {
   setSaveStatus("Pronto para editar", false);
 }
 
-export function startNewResume() {
+function startNewResume() {
   loadInitialData();
   showEditor();
 }
 
-export function openEditor() {
+function openEditor() {
   showEditor();
 }
 
@@ -1181,10 +1104,6 @@ modalDownloadBtn.addEventListener("click", () => {
   window.print();
 });
 
-modalEmailBtn.addEventListener("click", () => {
-  sendResumeByEmail();
-});
-
 clearBtn.addEventListener("click", () => {
   form.reset();
   renderExperienceEditor([emptyExperience()]);
@@ -1260,7 +1179,6 @@ window.addEventListener("popstate", () => {
   showLanding(false);
 });
 
-localStorage.removeItem("curriculo-pro-data");
 loadInitialData();
 createModelCarouselDots();
 updateLandingModelPreview();
@@ -1268,3 +1186,10 @@ updateLandingModelPreview();
 if (window.location.hash === "#editor") {
   showEditor(false);
 }
+
+window.curriculoPro = {
+  getFormData,
+  hydrateForm,
+  startNewResume,
+  openEditor
+};
