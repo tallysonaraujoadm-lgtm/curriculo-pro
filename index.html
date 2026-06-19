@@ -36,6 +36,7 @@
           <a href="#beneficios">Benefícios</a>
           <a href="#como-funciona">Como funciona</a>
           <a href="#modelos">Modelos</a>
+          <button class="nav-account" id="landingAccountBtn" type="button">Entrar</button>
           <button class="nav-cta" type="button" data-start-editor>Criar currículo</button>
         </nav>
       </header>
@@ -110,7 +111,7 @@
         </section>
 
         <section class="trust-strip" aria-label="Recursos de confiança">
-          <div><span aria-hidden="true">🔒</span><strong>Dados protegidos</strong><small>Suas informações ficam no dispositivo</small></div>
+          <div><span aria-hidden="true">🔒</span><strong>Dados protegidos</strong><small>Conta segura e acesso individual</small></div>
           <div><span aria-hidden="true">📄</span><strong>Formato profissional</strong><small>Leitura clara para recrutadores</small></div>
           <div><span aria-hidden="true">🌎</span><strong>Acesso em qualquer lugar</strong><small>Use no computador ou celular</small></div>
         </section>
@@ -254,7 +255,7 @@
           <div class="faq-list">
             <details><summary>É grátis criar meu currículo?</summary><p>Sim. Você pode preencher, personalizar e gerar seu currículo em PDF sem custo.</p></details>
             <details><summary>Preciso instalar algum programa?</summary><p>Não. A ferramenta funciona diretamente no navegador do computador ou celular.</p></details>
-            <details><summary>Meus dados ficam protegidos?</summary><p>Os dados são usados para montar o currículo e permanecem no seu dispositivo durante a sessão.</p></details>
+            <details><summary>Meus dados ficam protegidos?</summary><p>Os currículos salvos ficam associados à sua conta e só podem ser acessados após autenticação.</p></details>
             <details><summary>Posso mudar o modelo depois?</summary><p>Sim. Você pode trocar modelo e cor sem perder as informações já preenchidas.</p></details>
           </div>
         </section>
@@ -285,21 +286,33 @@
           </div>
           <div class="actions">
             <button class="ghost-button" id="backLandingBtn" type="button">Início</button>
+            <button class="ghost-button" id="myResumesBtn" type="button">Meus currículos</button>
+            <button class="ghost-button" id="saveResumeBtn" type="button">Salvar</button>
             <button class="ghost-button" id="clearBtn" type="button">Limpar</button>
             <button class="primary-button" id="printBtn" type="button">PDF</button>
+            <button class="account-button" id="editorAccountBtn" type="button">Entrar</button>
           </div>
         </header>
 
         <div class="page-status" aria-live="polite">
-          <div>
-            <p class="eyebrow">Etapa atual</p>
+          <div class="current-step-copy">
+            <p class="eyebrow">Vamos montar seu currículo</p>
             <h2 id="currentStepTitle">Dados pessoais</h2>
+            <p>Preencha no seu ritmo. Suas alterações aparecem na prévia automaticamente.</p>
           </div>
           <span id="stepCounter">1 de 6</span>
         </div>
         <div class="progress-track" aria-hidden="true">
           <span id="progressBar"></span>
         </div>
+        <nav class="editor-steps" aria-label="Etapas do currículo">
+          <button class="active" type="button" data-step-target="personal"><span>1</span><small>Dados</small></button>
+          <button type="button" data-step-target="profile"><span>2</span><small>Perfil</small></button>
+          <button type="button" data-step-target="experience"><span>3</span><small>Experiência</small></button>
+          <button type="button" data-step-target="education"><span>4</span><small>Formação</small></button>
+          <button type="button" data-step-target="template"><span>5</span><small>Visual</small></button>
+          <button type="button" data-step-target="finish"><span>6</span><small>Finalizar</small></button>
+        </nav>
 
         <form id="resumeForm" class="form-grid">
           <fieldset class="form-page active" data-page-panel="personal">
@@ -510,6 +523,13 @@
       </section>
 
       <aside class="preview-panel" aria-label="Prévia do currículo">
+        <div class="preview-toolbar">
+          <div>
+            <p>Prévia em tempo real</p>
+            <strong>Veja como seu currículo está ficando</strong>
+          </div>
+          <span><i></i> Atualizado</span>
+        </div>
         <article class="resume-sheet classic" id="resumePreview">
           <header class="resume-header">
             <div class="resume-photo-wrap">
@@ -569,13 +589,80 @@
           <p class="delivery-copy">Escolha uma opção para continuar.</p>
           <div class="delivery-actions">
             <button class="primary-button" id="modalDownloadBtn" type="button">Baixar PDF</button>
-            <button class="ghost-button" id="modalEmailBtn" type="button">Enviar para o e-mail</button>
+            <button class="ghost-button" id="modalEmailBtn" type="button">Enviar para meu e-mail</button>
           </div>
+          <p class="print-note">O PDF será formatado em A4. O envio exige uma conta com e-mail confirmado.</p>
           <p class="delivery-status" id="deliveryState"></p>
         </div>
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="auth-overlay" id="authOverlay" hidden>
+      <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <button class="modal-close" id="closeAuthBtn" type="button" aria-label="Fechar">×</button>
+        <p class="eyebrow">Sua conta</p>
+        <h2 id="authTitle">Entrar no Currículo Pro</h2>
+        <p class="auth-copy" id="authCopy">Acesse seus currículos salvos em qualquer dispositivo.</p>
+
+        <div class="auth-session" id="authSession" hidden>
+          <strong id="sessionUserName"></strong>
+          <span id="sessionUserEmail"></span>
+          <div class="auth-session-actions">
+            <button class="ghost-button" id="importAccountBtn" type="button">Usar dados da conta</button>
+            <button class="primary-button" id="sessionResumesBtn" type="button">Meus currículos</button>
+            <button class="ghost-button" id="signOutBtn" type="button">Sair</button>
+          </div>
+        </div>
+
+        <div id="authGuest">
+          <div class="auth-tabs" role="tablist">
+            <button class="active" type="button" data-auth-view="signin">Entrar</button>
+            <button type="button" data-auth-view="signup">Criar conta</button>
+          </div>
+
+          <form class="auth-form" id="authForm">
+            <label id="authNameField" hidden>
+              Nome
+              <input id="authName" name="name" autocomplete="name">
+            </label>
+            <label>
+              E-mail
+              <input id="authEmail" name="email" type="email" autocomplete="email" required>
+            </label>
+            <label id="authPasswordField">
+              Senha
+              <input id="authPassword" name="password" type="password" minlength="8" autocomplete="current-password" required>
+            </label>
+            <button class="primary-button auth-submit" id="authSubmitBtn" type="submit">Entrar</button>
+          </form>
+
+          <button class="auth-link" id="forgotPasswordBtn" type="button">Esqueci minha senha</button>
+          <div class="auth-divider" id="socialAuthDivider" hidden><span>ou continue com</span></div>
+          <div class="social-auth-actions" id="socialAuthActions" hidden>
+            <button type="button" data-social-provider="google" hidden>Google</button>
+            <button type="button" data-social-provider="facebook" hidden>Facebook</button>
+            <button type="button" data-social-provider="linkedin" hidden>LinkedIn</button>
+          </div>
+        </div>
+        <p class="auth-status" id="authStatus" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <div class="resumes-overlay" id="resumesOverlay" hidden>
+      <section class="resumes-modal" role="dialog" aria-modal="true" aria-labelledby="resumesTitle">
+        <button class="modal-close" id="closeResumesBtn" type="button" aria-label="Fechar">×</button>
+        <div class="resumes-heading">
+          <div>
+            <p class="eyebrow">Sua biblioteca</p>
+            <h2 id="resumesTitle">Meus currículos</h2>
+          </div>
+          <button class="primary-button" id="newResumeBtn" type="button">Novo currículo</button>
+        </div>
+        <p class="resumes-status" id="resumesStatus" aria-live="polite"></p>
+        <div class="resumes-list" id="resumesList"></div>
+      </section>
+    </div>
+
+    <script type="module" src="/auth-ui.js"></script>
   </body>
 </html>

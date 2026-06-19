@@ -1,39 +1,22 @@
 create extension if not exists pgcrypto;
 
+-- As tabelas user, session, account e verification são criadas pelo Better Auth:
+-- npm run auth:migrate
+
 create table if not exists public.resumes (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  title text not null default 'Curriculo',
+  user_id text not null references public."user"(id) on delete cascade,
+  title text not null default 'Currículo sem título',
   payload jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now(),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create unique index if not exists resumes_user_id_key on public.resumes (user_id);
+create index if not exists resumes_user_updated_idx
+  on public.resumes (user_id, updated_at desc);
 
+-- O navegador nunca acessa esta tabela diretamente.
+-- Todas as operações passam por /api/resumes, que valida a sessão Better Auth.
 alter table public.resumes enable row level security;
 
-drop policy if exists "resumes_select_own" on public.resumes;
-create policy "resumes_select_own"
-  on public.resumes
-  for select
-  using (auth.uid() = user_id);
-
-drop policy if exists "resumes_insert_own" on public.resumes;
-create policy "resumes_insert_own"
-  on public.resumes
-  for insert
-  with check (auth.uid() = user_id);
-
-drop policy if exists "resumes_update_own" on public.resumes;
-create policy "resumes_update_own"
-  on public.resumes
-  for update
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
-
-drop policy if exists "resumes_delete_own" on public.resumes;
-create policy "resumes_delete_own"
-  on public.resumes
-  for delete
-  using (auth.uid() = user_id);
+revoke all on table public.resumes from anon, authenticated;

@@ -42,6 +42,7 @@ const modelOptions = document.querySelector("#modelOptions");
 const previousModelBtn = document.querySelector("#previousModelBtn");
 const nextModelBtn = document.querySelector("#nextModelBtn");
 const modelCarouselDots = document.querySelector("#modelCarouselDots");
+const editorStepButtons = document.querySelectorAll("[data-step-target]");
 const templates = ["classic", "modern", "compact", "executive", "portrait", "sidebar"];
 const photoTemplates = ["portrait", "sidebar"];
 
@@ -318,7 +319,7 @@ function composeEducation(items) {
     .join("\n");
 }
 
-function getFormData() {
+export function getFormData() {
   const experiences = getExperiences();
   const educations = getEducations();
   const template = templates.find((name) => preview.classList.contains(name)) || "classic";
@@ -381,9 +382,23 @@ function render(data) {
   const nameNode = document.querySelector('[data-output="name"]');
   const roleNode = document.querySelector('[data-output="role"]');
   const contactNodes = document.querySelectorAll(".contact-list [data-output]");
+  const hasResumeContent = [
+    data.name,
+    data.role,
+    data.phone,
+    data.email,
+    data.location,
+    data.link,
+    data.summary,
+    data.skills,
+    data.experience,
+    data.education,
+    data.photoData
+  ].some((value) => (value || "").trim());
   const hasHeaderContent = [data.name, data.role, data.phone, data.email, data.location, data.link, data.photoData]
     .some((value) => (value || "").trim());
 
+  preview.classList.toggle("is-empty", !hasResumeContent);
   if (header) header.hidden = !hasHeaderContent;
 
   renderTextNode(nameNode, data.name);
@@ -711,6 +726,13 @@ function updatePageUi() {
   progressBar.style.width = `${((pageIndex + 1) / pages.length) * 100}%`;
   prevPageBtn.disabled = pageIndex === 0;
   nextPageBtn.textContent = currentPage === "finish" ? "Salvar em PDF" : "Avançar";
+
+  editorStepButtons.forEach((button, index) => {
+    const isActive = button.dataset.stepTarget === currentPage;
+    button.classList.toggle("active", isActive);
+    button.classList.toggle("completed", index < pageIndex);
+    button.setAttribute("aria-current", isActive ? "step" : "false");
+  });
 }
 
 function setPage(page) {
@@ -845,27 +867,73 @@ function getResumeFileName() {
   return `${name || "curriculo"}.pdf`;
 }
 
-function sendResumeByEmail() {
-  const recipient = fieldValue("email").trim();
-  if (!recipient) {
-    deliveryState.textContent = "Informe um e-mail nos dados pessoais.";
-    return;
+async function createResumePdf() {
+  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+    import("html2canvas"),
+    import("jspdf")
+  ]);
+
+  const canvas = await html2canvas(preview, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    logging: false
+  });
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+    compress: true
+  });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const imageHeight = canvas.height * pageWidth / canvas.width;
+  const image = canvas.toDataURL("image/jpeg", 0.94);
+
+  let remainingHeight = imageHeight;
+  let position = 0;
+  pdf.addImage(image, "JPEG", 0, position, pageWidth, imageHeight, undefined, "FAST");
+  remainingHeight -= pageHeight;
+
+  while (remainingHeight > 0) {
+    position = remainingHeight - imageHeight;
+    pdf.addPage();
+    pdf.addImage(image, "JPEG", 0, position, pageWidth, imageHeight, undefined, "FAST");
+    remainingHeight -= pageHeight;
   }
 
-  const subject = encodeURIComponent("Seu currículo do Currículo Pro");
-  const body = encodeURIComponent(
-    [
-      "Seu currículo foi preparado no Currículo Pro.",
-      "",
-      "Abra o site para revisar e gerar o PDF.",
-      `Arquivo sugerido: ${getResumeFileName()}`
-    ].join("\n")
-  );
-
-  window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  return pdf;
 }
 
-function hydrateForm(data) {
+async function sendResumeByEmail() {
+  deliveryState.textContent = "Gerando e enviando o PDF...";
+  modalEmailBtn.disabled = true;
+
+  try {
+    const pdf = await createResumePdf();
+    const pdfBase64 = pdf.output("datauristring").split(",")[1];
+    const response = await fetch("/api/send-resume", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileName: getResumeFileName(),
+        pdfBase64
+      })
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(body.error || "Não foi possível enviar o currículo.");
+    }
+    deliveryState.textContent = "Currículo enviado para o e-mail da sua conta.";
+  } catch (error) {
+    deliveryState.textContent = error.message || "Não foi possível enviar o currículo.";
+  } finally {
+    modalEmailBtn.disabled = false;
+  }
+}
+
+export function hydrateForm(data) {
   ["name", "role", "phone", "email", "location", "link", "summary", "skills"].forEach((key) => {
     const field = form.elements[key];
     if (field) field.value = data[key] || "";
@@ -948,6 +1016,15 @@ function loadInitialData() {
 
   hydrateForm(data);
   setSaveStatus("Pronto para editar", false);
+}
+
+export function startNewResume() {
+  loadInitialData();
+  showEditor();
+}
+
+export function openEditor() {
+  showEditor();
 }
 
 if (deliveryOverlay) {
@@ -1062,6 +1139,10 @@ nextPageBtn.addEventListener("click", () => {
   }
 
   setPage(pages[index + 1]);
+});
+
+editorStepButtons.forEach((button) => {
+  button.addEventListener("click", () => setPage(button.dataset.stepTarget));
 });
 
 function printResume() {
