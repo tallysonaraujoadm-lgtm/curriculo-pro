@@ -611,8 +611,68 @@ function createPeriodGroup(item) {
   group.append(title, grid, createCurrentCheckbox(item.current));
 
   togglePeriodEndFields(group);
+  updatePeriodConstraints(group);
 
   return group;
+}
+
+function updatePeriodConstraints(scope) {
+  const current = scope.querySelector('[data-field="current"]');
+  const startMonth = scope.querySelector('[data-field="startMonth"]');
+  const startYear = scope.querySelector('[data-field="startYear"]');
+  const endMonth = scope.querySelector('[data-field="endMonth"]');
+  const endYear = scope.querySelector('[data-field="endYear"]');
+
+  if (!startMonth || !startYear || !endMonth || !endYear) return true;
+
+  endYear.querySelectorAll("option").forEach((option) => {
+    option.disabled = Boolean(
+      option.value
+      && startYear.value
+      && Number(option.value) < Number(startYear.value)
+    );
+  });
+
+  endMonth.querySelectorAll("option").forEach((option) => {
+    option.disabled = Boolean(
+      option.value
+      && startMonth.value
+      && startYear.value
+      && endYear.value === startYear.value
+      && months.indexOf(option.value) < months.indexOf(startMonth.value)
+    );
+  });
+
+  endMonth.setCustomValidity("");
+  endYear.setCustomValidity("");
+
+  if (current?.checked) return true;
+
+  const startYearNumber = Number(startYear.value);
+  const endYearNumber = Number(endYear.value);
+  const hasYears = Boolean(startYear.value && endYear.value);
+
+  if (hasYears && endYearNumber < startYearNumber) {
+    endYear.setCustomValidity("O ano de saída ou conclusão não pode ser anterior ao ano de ingresso.");
+    return false;
+  }
+
+  const hasCompleteDates = Boolean(
+    hasYears
+    && startMonth.value
+    && endMonth.value
+  );
+  const endBeforeStart = hasCompleteDates && (
+    endYearNumber === startYearNumber
+    && months.indexOf(endMonth.value) < months.indexOf(startMonth.value)
+  );
+
+  if (endBeforeStart) {
+    endMonth.setCustomValidity("O mês de saída ou conclusão não pode ser anterior ao mês de ingresso.");
+    return false;
+  }
+
+  return true;
 }
 
 function togglePeriodEndFields(scope) {
@@ -626,6 +686,46 @@ function togglePeriodEndFields(scope) {
     field.disabled = disabled;
     if (disabled) field.value = "";
   });
+
+  updatePeriodConstraints(scope);
+}
+
+function validatePeriods(list, report = false) {
+  const groups = Array.from(list.querySelectorAll(".period-group"));
+
+  for (const group of groups) {
+    if (updatePeriodConstraints(group)) continue;
+
+    const invalidField = group.querySelector("select:invalid");
+    if (report && invalidField) {
+      invalidField.reportValidity();
+      invalidField.focus();
+    }
+    return false;
+  }
+
+  return true;
+}
+
+function validateBeforePageChange(targetPage) {
+  const targetIndex = pages.indexOf(targetPage);
+  const currentIndex = pages.indexOf(currentPage);
+  if (targetIndex <= currentIndex) return true;
+
+  if (currentPage === "experience") {
+    return validatePeriods(experienceList, true);
+  }
+
+  if (currentPage === "education") {
+    return validatePeriods(educationList, true);
+  }
+
+  if (targetPage === "finish") {
+    return validatePeriods(experienceList, true)
+      && validatePeriods(educationList, true);
+  }
+
+  return true;
 }
 
 function renderExperienceEditor(items) {
@@ -962,6 +1062,8 @@ form.addEventListener("change", (event) => {
     const item = field.closest(".dynamic-item");
     if (item) togglePeriodEndFields(item);
   }
+  const periodGroup = event.target.closest(".period-group");
+  if (periodGroup) updatePeriodConstraints(periodGroup);
   saveAndRender();
 });
 
@@ -1061,14 +1163,21 @@ nextPageBtn.addEventListener("click", () => {
     return;
   }
 
-  setPage(pages[index + 1]);
+  const nextPage = pages[index + 1];
+  if (validateBeforePageChange(nextPage)) setPage(nextPage);
 });
 
 editorStepButtons.forEach((button) => {
-  button.addEventListener("click", () => setPage(button.dataset.stepTarget));
+  button.addEventListener("click", () => {
+    const targetPage = button.dataset.stepTarget;
+    if (validateBeforePageChange(targetPage)) setPage(targetPage);
+  });
 });
 
 function printResume() {
+  if (!validatePeriods(experienceList, true) || !validatePeriods(educationList, true)) {
+    return;
+  }
   currentPage = "finish";
   updatePageUi();
   saveAndRender();
